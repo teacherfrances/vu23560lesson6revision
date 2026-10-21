@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ready, set, send: revision</title>
+<style>
+:root{
+  --black:#141414; --bar:#1d1d1d; --addr:#3b3b3b;
+  --mid:#555; --grey:#7a7a7a; --line:#9a9a9a; --pale:#ececec; --pale2:#f5f5f5;
+  --or:#F5A20F; --or-tint:#FFF0D2; --or-deep:#8A5300; --red:#9b2c2c; --red-tint:#F7E7E7;
+  --disp:"Century Gothic","CenturyGothic","URW Gothic","URW Gothic L","AppleGothic","Avant Garde","Futura","Trebuchet MS",sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",Candara,"Helvetica Neue",Arial,sans-serif;
+  --mono:Consolas,"Lucida Console","DejaVu Sans Mono","Courier New",monospace;
+}
+body{--pc:#F5A20F;--pc-ink:#141414;--pc-tint:#FFF0D2}
+body.g0{--pc:#F5A20F;--pc-ink:#141414;--pc-tint:#FFF0D2}
+body.g1{--pc:#141414;--pc-ink:#F5A20F;--pc-tint:#EFEFEF}
+body.g2{--pc:#6B6B6B;--pc-ink:#ffffff;--pc-tint:#EBEBEB}
+*{box-sizing:border-box}
+html{font-size:28px;height:100%}
+body{margin:0;height:100%;height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+  font-family:var(--body);color:var(--black);background:#fff;line-height:1.3;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid var(--or);outline-offset:2px;box-shadow:0 0 0 7px var(--black)}
+.disp{font-family:var(--disp);font-weight:700}
+
+/* top bar */
+.top{background:var(--bar);color:#fff;display:flex;align-items:center;gap:.3rem;padding:.25rem .4rem;flex:none}
+.dots{display:flex;gap:.2rem;flex:none}
+.dots i{display:block;width:.36rem;height:.36rem;border-radius:50%;background:#9a9a9a}
+.dots i:first-child{background:var(--or)}
+.addr{flex:1;min-width:0;background:var(--addr);border-radius:999px;padding:.2rem .7rem;font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb{background:#fff;color:#111;border:0;border-radius:4px;font-weight:700;font-size:.75rem;min-height:44px;min-width:44px;padding:0 .4rem;flex:none}
+.saved{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + min(5rem,150px));right:.5rem;background:var(--or);color:var(--black);font-weight:700;font-size:.7rem;padding:.1rem .6rem;border:2px solid var(--black);border-radius:999px;opacity:0;transition:opacity .3s;z-index:90;pointer-events:none}
+.saved.on{opacity:1}
+.prog{height:.4rem;background:#fff;flex:none;display:flex;gap:2px;padding:2px 2px 0}
+.prog i{display:block;flex:1;height:100%;opacity:.25}
+.prog i.on{opacity:1}
+
+main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:.5rem .6rem 1.2rem;position:relative}
+.wrap{max-width:900px;margin:0 auto;overflow-wrap:anywhere;word-break:normal}
+.taskbox .tt,.taskbox .tf,.q,.opt .tx,.showtxt,.mist div,.lede{overflow-wrap:anywhere}
+
+/* bottom bar */
+.foot{flex:none;border-top:6px solid var(--pc);background:#fff;padding:.3rem .4rem;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.foot{font-size:min(.9rem,30px)}
+.foot .bb{padding:.15em .4em}
+.foot .bb{flex:1;white-space:nowrap}
+.bb{border:3px solid var(--black);background:#fff;font-weight:700;min-height:2.1em;padding:.15em .7em;border-radius:4px;text-align:center}
+.bb.go{background:var(--or);color:var(--black)}
+.bb.solid{background:var(--black);color:#fff}
+.bb.wait{background:#fff;border-style:dashed;border-color:var(--or-deep);color:var(--or-deep)}
+.bb[disabled]{opacity:.35;cursor:default}
+.foot .bb.menub{flex:0 0 auto}
+.bb.skip{flex-basis:100%;background:var(--pale);font-weight:400}
+.pill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + min(3.6rem,120px));font-size:min(.75rem,24px);white-space:nowrap;z-index:40;background:var(--black);color:#fff;border:3px solid var(--or);border-radius:999px;font-weight:700;padding:.2em .9em;min-height:44px;max-width:94vw;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+
+/* docx-look pieces */
+.sbar{display:flex;align-items:stretch;margin:.2em 0 .5em}
+.sbar .blk{background:var(--pc);color:var(--pc-ink);font-family:var(--disp);font-weight:700;min-width:1.9em;display:flex;align-items:center;justify-content:center;font-size:1.1em;padding:0 .25em}
+.sbar .ttl{flex:1;background:var(--pc-tint);border:3px solid var(--black);border-left:0;padding:.25em .6em;font-family:var(--disp);font-weight:700}
+.lede{color:var(--mid);margin:.1em 0 .5em}
+.live{border:3px solid var(--black);background:var(--pale2);padding:.3em .6em;margin:.4em 0 .6em}
+.live.small{font-size:.72em;padding:.2em .5em;margin:.2em 0 .4em}
+.live .bar{height:.4em;background:#fff;border:2px solid var(--black);margin-top:.3em}
+.live .bar i{display:block;height:100%;background:var(--or)}
+.note{display:flex;background:var(--pale2);margin:.6em 0}
+.note .badge{width:1.7em;flex:none;background:#555;color:#fff;display:flex;justify-content:center;padding-top:.3em;font-weight:700}
+.note.ok .badge{background:var(--black);color:var(--or)}
+.note.warn .badge{background:var(--red)}
+.note .nb{padding:.4em .7em;flex:1;min-width:0}
+.note p{margin:.15em 0}
+.hl{background:var(--or-tint);border-bottom:3px solid var(--or);padding:0 .15em;font-weight:700}
+.muted{color:var(--mid)}
+.center{text-align:center}
+.row{display:flex;flex-wrap:wrap;gap:.4em;align-items:center}
+.grouphead{font-family:var(--disp);font-weight:700;margin:1em 0 .4em;display:flex;align-items:center;gap:.4em}
+.grouphead .sw{width:1em;height:1em;border:3px solid var(--black);flex:none}
+
+/* menu tiles */
+.hero{border:3px solid var(--black);border-bottom:10px solid var(--or);margin:.3em 0 .6em}
+.hero .hbar{background:var(--bar);color:#fff;padding:.25em .6em;font-size:.75em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero .panel{background:var(--or-tint);border-left:12px solid var(--or);margin:.6em;padding:.6em .8em}
+.eyebrow{font-family:var(--disp);font-weight:700;font-size:.75em}
+.big{font-family:var(--disp);font-weight:700;font-size:1.6em;line-height:1.1;margin:.15em 0}
+.mtile{display:flex;align-items:stretch;width:100%;text-align:left;border:3px solid var(--black);border-bottom-width:7px;background:#fff;padding:0;margin:.4em 0}
+.mtile .l{font-family:var(--disp);font-weight:700;width:1.9em;flex:none;display:flex;align-items:center;justify-content:center;font-size:1.1em}
+.mtile .t{padding:.35em .6em;flex:1;min-width:0}
+.mtile .t b{display:block}
+.mtile .d{display:block;color:var(--mid)}
+.mtile .sc{display:inline-block;margin-top:.25em;border:2px solid var(--black);border-radius:999px;padding:0 .5em;font-weight:700}
+.mtile .sc.done{background:var(--or)}
+.welcome{border:3px solid var(--black);background:var(--or);padding:.5em .7em;margin:.5em 0}
+
+/* item cards */
+.card{border:3px solid var(--black);border-bottom:8px solid var(--pc);background:#fff;padding:.6em .7em;margin:.7em 0;border-left-width:3px}
+.card.ok{border-left:12px solid var(--or)}
+.card.no{border-left:12px solid var(--red)}
+.card.flash{animation:flash 1s}
+@keyframes flash{25%{background:var(--or-tint)}75%{background:var(--or-tint)}}
+.chead{display:flex;align-items:center;gap:.4em;margin-bottom:.3em;flex-wrap:wrap}
+.num{background:var(--pc);color:var(--pc-ink);font-weight:700;min-width:1.6em;min-height:1.6em;display:flex;align-items:center;justify-content:center}
+.tag{border:2px solid var(--tagc,#8A5300);color:var(--tagc,#8A5300);padding:0 .45em;font-weight:700;font-size:.85em;border-radius:3px}
+.q{font-weight:700;margin:.3em 0 .55em;background:var(--pc-tint);border-left:8px solid var(--pc);padding:.45em .6em}
+.stress{background:var(--pc-tint);border-left:8px solid var(--pc);padding:.2em .4em}
+.showtxt{border:3px solid var(--black);background:var(--pale2);padding:.4em .6em;margin:.3em 0 .5em;font-family:var(--mono);white-space:pre-line;overflow-wrap:anywhere}
+.opt{display:flex;gap:.5em;align-items:center;width:100%;text-align:left;border:3px solid var(--black);background:#fff;min-height:2.1em;padding:.3em .6em;margin:.35em 0;border-radius:4px}
+.opt .tx{min-width:0;overflow-wrap:anywhere}
+.opt .ol{flex:none;min-width:1.5em;height:1.5em;display:inline-flex;align-items:center;justify-content:center;background:var(--pc-tint);border:2px solid var(--pc);color:var(--black);font-weight:700;border-radius:4px}
+.opt.right .ol{background:var(--or);border-color:var(--or)}
+.opt{padding-left:.4em}
+.opt .mk{margin-left:auto;font-weight:700;flex:none}
+.q,.fb,.mist div{overflow-wrap:anywhere}
+.opt.right{background:var(--black);color:#fff}
+.opt.right .mk{color:var(--or)}
+.opt.wrong{background:repeating-linear-gradient(45deg,#e8e8e8 0 8px,#cdcdcd 8px 16px)}
+.opt.wrong .tx{text-decoration:line-through}
+.opt.dim{opacity:.45}
+.fb{margin:.4em 0 .2em;padding:.4em .6em;border:3px solid var(--black);background:var(--pale2)}
+.fb.good{background:var(--or-tint)}
+.fb b{display:block}
+.chg{border:2px solid var(--black);background:#fff;border-radius:999px;min-height:44px;padding:0 .8em;font-weight:700;margin-top:.3em}
+.say{border:2px solid var(--black);background:#fff;border-radius:999px;min-height:44px;padding:0 .8em;font-weight:700}
+.stress{font-family:var(--disp);font-weight:700;font-size:min(1.5em,10vw);text-align:center;margin:.2em 0}
+.summary{border:3px solid var(--black);border-bottom:8px solid var(--pc);background:var(--pc-tint);padding:.6em .7em;margin:1em 0}
+.mchip{border:2px solid var(--black);background:#fff;border-radius:999px;min-height:44px;padding:0 .7em;margin:.15em;font-weight:700}
+
+/* ===== simulation ===== */
+.taskbox{position:sticky;top:-.5rem;z-index:20;background:#fff;border:3px solid var(--black);border-bottom:8px solid var(--or);padding:.4em .6em;margin:.3em 0 .5em;box-shadow:0 6px 0 #fff}
+.taskbox{font-size:.9em;background:var(--pc-tint);border-color:var(--black)}
+.taskbox .tt::before{content:"\1F449  "}
+.taskbox .tf{background:#fff}
+@media (max-height:900px), (max-width:600px){ .taskbox{position:static;box-shadow:none} }
+.taskbox .tn{font-size:.8em;color:var(--mid);font-weight:700}
+.taskbox .tt{font-weight:700;font-size:1.05em}
+.taskbox .tf{font-size:.85em;margin-bottom:.25em;padding:.2em .4em}
+.taskbox .tf.good{background:var(--or-tint);border-left:6px solid var(--or)}
+.taskbox .tf.bad{background:var(--red-tint);border-left:6px solid var(--red)}
+.sim{font-size:.62em;border:3px solid var(--black);border-bottom:10px solid var(--pc);background:#fff;overflow:hidden;line-height:1.25;user-select:none;-webkit-user-select:none}
+.hit{font:inherit;color:inherit;min-height:44px;min-width:44px;border:0;background:transparent;display:inline-flex;align-items:center;justify-content:center;padding:.2em .5em;border-radius:6px;text-align:left;-webkit-tap-highlight-color:transparent}
+.sim .hit{scroll-margin-top:9rem;scroll-margin-bottom:2rem}
+.hit.okf{animation:okf .7s}
+.hit.nof{animation:nof .6s}
+@keyframes okf{0%,60%{background:var(--or);color:var(--black);box-shadow:0 0 0 3px var(--black)}}
+@keyframes nof{0%,20%,60%{transform:translateX(-4px);background:#d3d3d3}40%,80%{transform:translateX(4px)}}
+.hit.done{box-shadow:inset 0 0 0 3px var(--or)}
+
+/* desktop */
+.desk{color:#fff;background:#2c3a4d}
+.wall{background:radial-gradient(ellipse at 75% 20%,#5d7690 0%,#3b4d63 45%,#25303e 100%);padding:.8em .5em 1.2em;min-height:22em}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(5.6em,1fr));gap:.9em .2em}
+.icons .hit{flex-direction:column;justify-content:flex-start;padding:.35em .2em;color:#fff;border-radius:10px}
+.icons .hit:active{background:rgba(255,255,255,.18)}
+.icons .hit.done{background:rgba(245,162,15,.22);box-shadow:inset 0 0 0 3px var(--or)}
+.ic{width:4.6em;height:4.6em;border-radius:20%;background:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 8px rgba(0,0,0,.45)}
+.ic svg{width:76%;height:76%}
+.icl{font-size:1.05em;font-weight:700;margin-top:.35em;text-align:center;min-height:1.3em;color:#fff;text-shadow:0 1px 3px #000}
+.taskbar{display:flex;align-items:center;gap:.6em;background:rgba(20,24,32,.96);padding:.35em .6em;color:#e6e9f2;border-top:1px solid #4a5568}
+.startb{display:inline-flex;width:2.2em;height:2.2em;align-items:center;justify-content:center;background:#3b4658;border-radius:6px}
+.startb svg{width:1.2em;height:1.2em}
+.tsearch{flex:1;background:#3b4658;border-radius:999px;padding:.35em .8em;color:#c9cede;white-space:nowrap;overflow:hidden}
+.clock{display:flex;flex-direction:column;align-items:flex-end;font-size:.85em;line-height:1.15;white-space:nowrap}
+/* browser chrome */
+.chrome{background:#e4e6eb}
+.tabs{display:flex;align-items:flex-end;gap:.2em;padding:.35em .35em 0;min-width:0}
+.tabw{display:flex;align-items:center;background:#d2d6de;border-radius:8px 8px 0 0;min-width:0;flex:0 1 auto}
+.tabw.on{background:#fff}
+.tabw .hit.tabt{justify-content:flex-start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:11em;display:block;line-height:44px;padding:0 .4em}
+.tabw .hit.tabx{min-width:40px;padding:0}
+.tool{display:flex;align-items:center;gap:.1em;padding:.15em .25em .25em;background:#fff;border-bottom:2px solid #d6d9e0}
+.tool .hit{padding:0 .3em;font-size:1.15em}
+.tool .hit.addr{flex:1;min-width:0;justify-content:flex-start;background:#eef0f4;border-radius:999px;font-size:1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:44px;padding:0 .7em}
+.tool .fwd{color:#9aa0ab}
+.page{display:flex;min-height:15em;position:relative}
+.pcont{flex:1;min-width:0}
+.scol{width:30px;flex:none;background:#f1f2f5;border-left:2px solid #dcdfe5;display:flex}
+.scol .hit{width:100%;min-width:30px;padding:0;align-items:flex-start;border-radius:0}
+.thumb{display:block;width:12px;height:3.5em;background:#8d929c;border-radius:6px;margin:.4em auto 0}
+.thumb.low{margin-top:6em}
+.phead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.3em;padding:.4em .5em}
+.logo{font-family:var(--disp);font-weight:700;font-size:1.25em}
+.logo i{display:inline-flex;width:1.5em;height:1.5em;border-radius:50%;background:#3a3a3a;color:#fff;font-style:normal;align-items:center;justify-content:center;margin-right:.25em;font-size:.9em}
+.sbox{border:2px solid #b9bdc6;border-radius:999px;color:#666;background:#fff;padding:0 .7em}
+.nav{background:#1b1b1b;display:flex;flex-wrap:wrap;padding:0 .2em}
+.nav .hit{color:#fff;font-family:var(--disp);font-weight:700;padding:0 .5em}
+.herop{background:#e6e6e6;padding:.7em .7em .8em;position:relative}
+.herop h3{margin:0 0 .2em;font-family:var(--disp);font-size:1.35em}
+.findbtn{background:#3d3d3d!important;color:#fff!important;border-radius:999px!important;font-family:var(--disp);font-weight:700;padding:0 1em!important;margin-top:.4em}
+.cursor{position:absolute;right:16%;top:1.6em;font-size:1.6em;min-width:44px;min-height:44px}
+.cards{display:flex;flex-wrap:wrap;gap:.4em;padding:.6em}
+.cards .hit{border:2px solid #d0d3da;border-radius:6px;flex:1 1 8em;flex-direction:column;align-items:flex-start;padding:.4em .5em}
+.cards b{font-family:var(--disp)}
+.drop{margin:0 .6em .2em 3.5em;border:2px solid #d0d3da;background:#fff;display:flex;flex-direction:column;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.drop .hit{justify-content:space-between;border-radius:0;border-bottom:1px solid #eee;width:100%}
+.drop .hit.open{background:#e9e9e9}
+.drop.two{margin-left:5.5em}
+.pbody{padding:.6em .7em}
+.pbody h3{font-family:var(--disp);margin:.1em 0 .4em;font-size:1.3em}
+.pbody p{margin:.3em 0}
+.fade{color:#aaa}
+.blank{padding:2.5em 1em;text-align:center;color:var(--mid)}
+.keys{display:flex;flex-wrap:wrap;gap:.35em;padding:.6em;background:#d9dce2}
+.keys .hit{background:#fff;border:2px solid #9aa0ab;border-radius:6px;font-family:var(--mono);font-weight:700;font-size:1.15em;padding:0 .6em;box-shadow:0 3px 0 #9aa0ab}
+.keys .hit.enter{background:var(--black);color:#fff;font-family:var(--body)}
+.serp{padding:.4em .7em}
+.serp .slogo{font-family:var(--disp);font-weight:700;font-size:1.3em;margin-right:.4em}
+.stabs{display:flex;flex-wrap:wrap;border-bottom:2px solid #dcdfe5;padding:0 .4em}
+.stabs .hit{color:#555;font-family:var(--disp);font-weight:700}
+.stabs .hit.cur{color:#111;box-shadow:inset 0 -4px 0 #111;border-radius:0}
+.res{padding:.35em .5em .5em}
+.res .hit{display:flex;justify-content:flex-start;padding:0 .3em;min-height:40px}
+.res .rurl{color:#5b6070}
+.res .rt{font-family:var(--disp);font-weight:700;font-size:1.1em;color:#1a4fb5;text-decoration:underline;text-decoration-thickness:1px}
+.res .rd{padding:0 .3em;color:#333}
+.spons{font-weight:700;color:#111}
+.loading{padding:3em 1em;text-align:center;font-weight:700}
+
+.th{display:inline-flex;width:1.7em;height:1.7em;background:#111;color:#fff;border-radius:6px;align-items:center;justify-content:center;font-style:normal;font-size:.85em;margin-right:.3em;font-family:var(--disp)}
+.logo .th{border-radius:6px}
+.pillb{border:2px solid #333!important;border-radius:999px!important;padding:0 1em!important;font-weight:700;background:#fff}
+.pillb.dark{background:#3d3d3d!important;color:#fff!important}
+.thhero{display:flex!important;flex-direction:column;align-items:flex-start!important;background:#1b1b1b!important;color:#fff!important;width:100%;border-radius:0!important;padding:.7em .8em!important}
+.thhero h3{margin:0 0 .2em;font-family:var(--disp);font-size:1.35em}
+.lvls{display:flex;flex-wrap:wrap;gap:.4em}
+.lvl{flex:1 1 9em;flex-direction:column;align-items:flex-start!important;background:#f1f2f5!important;border-radius:8px!important;padding:.5em .6em!important}
+.lvl b{font-family:var(--disp);font-size:1.15em}
+.lvl .start{font-weight:700;margin-top:.2em}
+.flinks{display:flex;flex-wrap:wrap;padding:0 .4em .5em;color:#555}
+.l2tabs{display:flex;flex-wrap:wrap;gap:.3em;padding:.2em .5em .5em}
+.l2tabs .hit{background:#eef0f4;border-radius:999px;font-family:var(--disp);font-weight:700;padding:0 .9em}
+.l2tabs .hit.on{background:#444;color:#fff}
+.lrows{padding:0 .5em .6em}
+.lrow{display:flex;flex-wrap:wrap;align-items:center;border:2px solid #d0d3da;border-radius:8px;margin:.3em 0;padding:0 .2em}
+.lrow .ltitle{flex:1 1 10em;justify-content:flex-start;font-family:var(--disp);font-weight:700}
+.newb{background:#111!important;color:#fff!important;border-radius:999px!important;font-weight:700;min-height:44px!important}
+.ltime{color:#555}
+.player,.lplayer{background:#1b1b1b;color:#fff;border-radius:10px;padding:.6em .7em}
+.lplayer{border:3px solid var(--black);margin:.4em 0 .6em}
+.lplayer .say{background:#fff;color:#111}
+.lplayer .mchip{min-width:44px;color:#111;background:#fff}
+.lplayer .muted{color:#d5d9e3}
+.lsteps{color:#c9cede;margin:.2em 0 .4em}
+.ptitle{font-family:var(--disp);font-weight:700;font-size:1.15em}
+.psub{color:#c9cede;margin-bottom:.3em}
+.ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:.2em}
+.ctrls .hit{color:#fff;font-size:1.2em}
+.ctrls .playb{background:#fff!important;color:#111!important;border-radius:50%!important;width:2.4em;height:2.4em}
+.ctrls .dim{opacity:.5}
+.ctrls .spd{border:2px solid #fff!important;border-radius:999px!important;font-size:1em}
+.pbar{width:100%;justify-content:flex-start!important;padding:0 .3em!important}
+.pbar .pfill{display:block;height:8px;background:#fff;border-radius:4px;box-shadow:inset 0 0 0 0 #fff}
+.pbar::after{content:"";flex:1;height:8px;background:#4b5263;border-radius:4px}
+.showt{background:#3a4152!important;color:#fff!important;border-radius:999px!important;font-weight:700;margin-top:.3em}
+.ptext{background:#fff;color:#111;border-radius:6px;padding:.4em .6em;margin-top:.4em}
+.ptext.light{border:2px solid #555}
+.printbg{background:#9aa1ae;padding:.6em}
+.pbox{background:#fff;border-radius:10px;padding:.6em .7em}
+.prhead{display:flex;justify-content:space-between;align-items:center;font-family:var(--disp);font-size:1.2em}
+.preview{flex-direction:column;align-items:flex-start!important;background:#f1f2f5!important;border:2px solid #d0d3da!important;width:9em;padding:.5em!important;margin:.3em 0}
+.preview i{display:block;height:5px;width:100%;background:#d5d8e0;margin-top:.45em}
+.pform{display:flex;flex-direction:column;gap:.2em}
+.prow{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}
+.plab{font-family:var(--disp);font-weight:700;width:5.5em}
+.sel{flex:1;justify-content:space-between!important;border:2px solid #d0d3da!important;min-width:8em}
+.caret2{color:#555}
+.addrw{flex:1;display:flex;align-items:center;min-width:0;background:#eef0f4;border-radius:999px}
+.addrw .hit.addr{background:transparent!important;padding-left:.2em}
+.lockb{padding:0 .2em!important}
+.popup{border:4px solid #c8452e;border-radius:10px;background:#fff;margin:.4em .5em;padding:.5em .6em}
+.congr{color:#c8452e;font-family:var(--disp)}
+.claim{background:#c8452e!important;color:#fff!important;border-radius:999px!important;font-weight:700;padding:0 1em!important}
+.pwbox{background:#fff;border:2px solid #d0d3da;border-radius:10px;margin:.4em .5em .6em;padding:.5em .6em}
+.fld{border:2px solid #d0d3da;border-radius:6px;padding:.2em .5em;margin:.1em 0 .3em}
+.chk{justify-content:flex-start!important;gap:.4em}
+.cbox{display:inline-flex;width:1.3em;height:1.3em;border:2px solid #111;align-items:center;justify-content:center;font-weight:700}
+/* lesson 6 extras */
+.small{font-size:.8em}
+.sh6{display:flex;align-items:center;gap:.4em;background:#3d3d3d;color:#fff;padding:.25em .5em}
+.slogo{font-family:var(--disp);font-weight:700;white-space:nowrap}
+.sh6 .hit.msearch6{flex:1 1 4em;min-width:0;background:#fff;color:#555;border-radius:999px;justify-content:flex-start;white-space:nowrap;overflow:hidden}
+.sh6 .hit.acct6{background:#fff;color:#1a1a1a;border-radius:999px;font-weight:700;flex:none}
+.apanel{display:flex;justify-content:flex-end;align-items:center;gap:.5em;padding:.25em .5em;border-bottom:2px solid #d9d9d9;background:#fafafa}
+.amail{color:#444;overflow-wrap:anywhere;min-width:0}
+.apanel .hit.sout6{border:2px solid #1a1a1a;border-radius:8px;font-weight:700;background:#ececec;flex:none}
+.undel{border:2px solid #8c8c8c;border-radius:8px;background:#ececec;padding:.3em .6em;margin-top:.3em}
+.undel .hit.mq{overflow-wrap:anywhere;font-weight:700}
+.ctop{display:flex;flex-wrap:wrap;gap:.4em;padding:.4em .5em;border-bottom:1px solid #d9d9d9}
+.hit.cbt6{border:2px solid #1a1a1a;border-radius:8px;font-weight:700}
+.cval.ph{color:#777}
+.kbwrap{background:#d9dce2;padding:.5em}
+.kscreen{background:#fff;border:2px solid #9aa0ab;border-radius:6px;padding:.3em .6em;margin-bottom:.5em;font-family:var(--mono)}
+.kcaret{display:inline-block;width:2px;height:1.1em;background:#1a1a1a;vertical-align:middle;margin-left:2px}
+.kb6{display:flex;flex-direction:column;gap:.3em}
+.krow{display:flex;gap:.25em}
+.kb6 .hit.key{flex:1 1 0;min-width:0;background:#fff;border:2px solid #9aa0ab;border-radius:6px;box-shadow:0 3px 0 #9aa0ab;font-family:var(--mono);font-weight:700;padding:0 .1em;flex-direction:column;line-height:1.05;white-space:nowrap;overflow:hidden;font-size:.95em}
+.kb6 .hit.key .kt{font-size:.8em;color:#555}
+.kb6 .ks{display:none}
+@media (max-width:600px){.kb6 .kl{display:none}.kb6 .ks{display:inline;font-size:1.3em}.kb6 .hit.key{font-size:.72em}.kb6{gap:.2em}.krow{gap:.15em}.kbwrap{padding:.3em}}
+/* lesson 5 extras */
+.wall4{min-height:5.5em;display:flex;align-items:flex-start;justify-content:flex-end;padding:.6em .8em}
+.tbar4{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.1em .15em;background:rgba(20,24,32,.96);padding:.3em .4em;border-top:1px solid #4a5568}
+.tbar4 .hit{padding:.15em;border-radius:8px}
+.tbar4 .hit.done{background:rgba(245,162,15,.3);box-shadow:inset 0 0 0 3px var(--or)}
+.ic.sm{width:2.9em;height:2.9em;border-radius:22%;box-shadow:0 2px 4px rgba(0,0,0,.45)}
+.mail5{background:#fff;container-type:inline-size}
+@container (max-width:24em){.lname{display:none}}
+.mh5{display:flex;flex-wrap:nowrap;align-items:center;gap:.3em .5em;padding:.3em .5em;border-bottom:2px solid #d9d9d9}
+.mh5 .hit.mlogo{font-family:var(--disp);font-weight:700;font-size:1.05em;padding:0 .2em;white-space:nowrap;flex:none}
+.mh5 .hit.msearch{flex:1 1 4em;min-width:0;white-space:nowrap;overflow:hidden;justify-content:space-between;border:2px solid #8c8c8c;border-radius:999px;color:#555;padding:0 .8em}
+.mwho{margin-left:auto;color:#444;white-space:nowrap}
+@media (max-width:900px){.mwho{display:none}.mh5 .hit.mlout{margin-left:auto}}
+.mh5 .hit.mlout{border:2px solid #1a1a1a;border-radius:999px;font-weight:700;padding:0 .6em;white-space:nowrap;flex:none}
+.mnote{background:#E2F1E7;border-bottom:2px solid #2E7D4F;padding:.3em .6em;font-weight:700}
+.mbody{display:flex;flex-wrap:wrap;min-height:14em}
+.mside{flex:0 0 8em;min-width:0;display:flex;flex-direction:column;gap:.1em;padding:.4em;border-right:2px solid #d9d9d9}
+.mside .hit{justify-content:flex-start;width:100%}
+.mside .hit.mnew{background:#1a1a1a;color:#fff;border-radius:999px;font-weight:700;margin-bottom:.3em;justify-content:center}
+.mside .hit.mf.on{background:#e3e3e3;font-weight:700}
+.mmain{flex:1 1 13em;min-width:0}
+.mside .hit{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:44px;text-align:left;padding:0 .4em}
+.mside .hit.mnew{text-align:center}
+.mlist{border-bottom:2px solid #d9d9d9}
+.mrow{display:flex!important;flex-direction:column;align-items:flex-start!important;width:100%;border-bottom:1px solid #e6e6e6!important;border-radius:0!important;padding:.25em .6em!important}
+.mrow.un{background:#f2f2f2}.mrow.on{background:#FFF0D2}
+.mprev{color:#5a5a5a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mread{padding:.4em .6em}
+.mread p{margin:.25em 0}.mread p.gap,.cmp p.gap,.jmail p.gap{margin-top:.7em}
+.mbtns{display:flex;flex-wrap:wrap;gap:.3em;margin-bottom:.4em}
+.mbtns .hit.mbt{border:2px solid #1a1a1a;border-radius:8px;font-weight:700}
+.mrh{font-weight:700;font-size:1.1em}.mrm{color:#555;margin-bottom:.3em}
+.hit.mq{display:inline-flex;min-height:44px;padding:.1em .3em;background:#fffbe9;border-bottom:2px dashed #b38a00;border-radius:3px}
+.mempty{color:#777;padding:1em 0}
+.cmp{margin:.4em;border:2px solid #8c8c8c;border-radius:10px;overflow:hidden}
+.chd{background:#1a1a1a;color:#fff;font-weight:700;padding:.3em .6em}
+.crow{display:flex;align-items:center;border-bottom:1px solid #d9d9d9}
+.crow .clab{flex:1;justify-content:flex-start;gap:.5em;min-width:0;border-radius:0}
+.crow .clab b{min-width:4.3em;color:#333}
+.cval{overflow-wrap:anywhere}
+.clab.static{display:flex;align-items:center;gap:.5em;padding:.2em .5em;min-height:44px}
+.ccb{display:flex}
+.ccb .hit.ccx{font-weight:700;color:#333}
+.cfmt{display:flex;gap:.3em;padding:.2em .5em;border-bottom:1px solid #d9d9d9}
+.cfmt .hit.fb5{border:2px solid #8c8c8c;border-radius:6px;font-family:Georgia,serif;font-size:1.1em}
+.hit.ctxt{display:block;width:100%;min-height:6em;text-align:left;padding:.4em .6em;border-radius:0}
+.hit.ctxt p{margin:.2em 0}
+.cfoot{display:flex;align-items:center;justify-content:space-between;padding:.3em .5em;border-top:1px solid #d9d9d9}
+.hit.csend{background:#1a1a1a;color:#fff;border-radius:999px;font-weight:700;padding:0 1.6em}
+.hit.cbin{font-size:1.2em}
+.jmail{border:3px solid var(--black);background:#fff;padding:.5em .8em;margin:0 0 .6em}
+.jmail .jm{font-family:var(--mono);color:#444;font-size:.85em;overflow-wrap:anywhere}
+.jmail p{margin:.35em 0}
+/* static page in read part */
+.spage{font-size:.8em;border:3px solid var(--black);border-bottom:8px solid var(--pc);margin:.6em 0;background:#fff}
+.spage .sbarr{background:#e4e6eb;padding:.3em .5em}
+.spage .surl{background:#fff;border-radius:999px;padding:.15em .7em;overflow-wrap:anywhere}
+.spage .sc{padding:.6em .8em}
+.spage h3{font-family:var(--disp);margin:.1em 0 .3em}
+.spage p{margin:.3em 0}
+.spage .snav{background:#1b1b1b;color:#fff;padding:.3em .6em;font-family:var(--disp);font-weight:700}
+
+/* results */
+.score{font-family:var(--disp);font-weight:700;font-size:2.2em;text-align:center}
+.stars{text-align:center;font-size:1.6em;letter-spacing:.1em}
+.rrow{display:flex;align-items:center;width:100%;border:3px solid var(--black);background:#fff;padding:0;margin:.3em 0;text-align:left;min-height:2em}
+.rrow .l{width:1.8em;align-self:stretch;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;flex:none}
+.rrow .t{flex:1;padding:.2em .5em;min-width:0}
+.rrow .s{padding:0 .5em;font-weight:700;flex:none}
+.mist .you{text-decoration:line-through;color:var(--mid)}
+.mist .right{font-weight:700}
+
+@media (min-width:700px){ main{padding:.8rem 1rem 1.4rem} }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body class="g0">
+<div class="top">
+  <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="addr" id="addr">&#128274; vu23560 &rsaquo; revision</div>
+  <button class="tb" id="bSmall" aria-label="Smaller text">A&minus;</button>
+  <button class="tb" id="bBig" aria-label="Bigger text">A+</button>
+  <button class="tb" id="bMenu" aria-label="Menu">&#9776;</button>
+</div>
+<div class="prog" id="prog" aria-hidden="true"></div>
+<main id="main"><div class="wrap" id="wrap"></div></main>
+<div class="foot" id="foot"></div>
+<div class="saved" id="saved">&#10003; Saved</div>
+<div id="pillRoot"></div>
+
+<script>
+(function(){
+"use strict";
+var KEY = "vu23560_l6_ready_set_send_revision_v1";
+var SIZES = [24, 28, 34, 40], SIZE_NAMES = ["Normal", "Large", "Larger", "Largest"];
+var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var storeOK = false, FLASH = null, blocked = 0, LOADT = null;
+
+function h(t, a, c){
+  var e = document.createElement(t), k;
+  if(a){ for(k in a){ if(!a.hasOwnProperty(k) || a[k] == null) continue;
+    if(k === "cls") e.className = a[k];
+    else if(k.indexOf("on") === 0) e.addEventListener(k.slice(2), a[k]);
+    else e.setAttribute(k, a[k]); } }
+  if(c != null){ if(!(c instanceof Array)) c = [c];
+    for(var i = 0; i < c.length; i++){ var x = c[i]; if(x == null || x === false) continue;
+      e.appendChild(typeof x === "string" || typeof x === "number" ? document.createTextNode(String(x)) : x); } }
+  return e;
+}
+function shuffle(a){ a = a.slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function range(n){ var a = []; for(var i = 0; i < n; i++) a.push(i); return a; }
+function note(kind, sym, kids){ return h("div", {cls:"note " + (kind || "")}, [h("div", {cls:"badge"}, sym), h("div", {cls:"nb"}, kids)]); }
+
+/* speech for the Hear it buttons */
+var VOICE = null;
+function pickVoice(){ if(!window.speechSynthesis) return; var vs = speechSynthesis.getVoices(), pref = ["en-AU", "en-GB", "en-NZ", "en-US", "en"];
+  for(var p = 0; p < pref.length; p++) for(var i = 0; i < vs.length; i++) if(vs[i].lang && vs[i].lang.replace("_", "-").indexOf(pref[p]) === 0){ VOICE = vs[i]; return; } }
+if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function say(t){ if(!window.speechSynthesis) return; try{ speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); if(VOICE) u.voice = VOICE; u.lang = VOICE ? VOICE.lang : "en-AU"; u.rate = 0.8; speechSynthesis.speak(u); }catch(e){} }
+
+/* ===================== CONTENT ===================== */
+var ICSVG = {"folder": "<path d=\"M5 13a3 3 0 0 1 3-3h10l4 4h18a3 3 0 0 1 3 3v19a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z\" fill=\"#e2e2e2\"/><path d=\"M5 19h38\"/>", "email": "<rect x=\"5\" y=\"11\" width=\"38\" height=\"27\" rx=\"3\" fill=\"#e2e2e2\"/><path d=\"M6 13l18 14 18-14\"/>", "browser": "<circle cx=\"24\" cy=\"24\" r=\"18\" fill=\"#e2e2e2\"/><ellipse cx=\"24\" cy=\"24\" rx=\"7.5\" ry=\"18\"/><path d=\"M6 24h36M9 15h30M9 33h30\"/>", "document": "<path d=\"M12 5h17l9 9v29H12z\" fill=\"#e2e2e2\"/><path d=\"M29 5v9h9M17 22h15M17 28h15M17 34h10\"/>", "camera": "<path d=\"M5 17a3 3 0 0 1 3-3h7l3-5h12l3 5h7a3 3 0 0 1 3 3v19a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z\" fill=\"#e2e2e2\"/><circle cx=\"24\" cy=\"26\" r=\"8\" fill=\"#fff\"/>", "sheet": "<rect x=\"6\" y=\"8\" width=\"36\" height=\"32\" rx=\"2\" fill=\"#fff\"/><path d=\"M6 16h36M6 24h36M6 32h36M18 8v32M30 8v32\"/><rect x=\"6\" y=\"8\" width=\"36\" height=\"8\" fill=\"#cfcfcf\"/>", "game": "<path d=\"M14 15h20a10 10 0 0 1 9 14l-3 7a4 4 0 0 1-7 1l-3-5H18l-3 5a4 4 0 0 1-7-1l-3-7a10 10 0 0 1 9-14z\" fill=\"#e2e2e2\"/><path d=\"M15 21v8M11 25h8\"/><circle cx=\"31\" cy=\"23\" r=\"1.5\" fill=\"#1f1f1f\"/><circle cx=\"35\" cy=\"27\" r=\"1.5\" fill=\"#1f1f1f\"/>", "calc": "<rect x=\"10\" y=\"4\" width=\"28\" height=\"40\" rx=\"3\" fill=\"#e2e2e2\"/><rect x=\"14\" y=\"8\" width=\"20\" height=\"9\" fill=\"#fff\"/><path d=\"M16 24h2M23 24h2M30 24h2M16 31h2M23 31h2M30 31h2M16 38h2M23 38h2M30 38h2\" stroke-width=\"4\"/>", "settings": "<path d=\"M21 4h6l1 5 4 2 4-3 4 4-3 4 2 4 5 1v6l-5 1-2 4 3 4-4 4-4-3-4 2-1 5h-6l-1-5-4-2-4 3-4-4 3-4-2-4-5-1v-6l5-1 2-4-3-4 4-4 4 3 4-2z\" fill=\"#e2e2e2\"/><circle cx=\"24\" cy=\"24\" r=\"6\" fill=\"#fff\"/>", "printer": "<rect x=\"13\" y=\"5\" width=\"22\" height=\"11\" fill=\"#fff\"/><rect x=\"5\" y=\"16\" width=\"38\" height=\"17\" rx=\"3\" fill=\"#e2e2e2\"/><rect x=\"13\" y=\"27\" width=\"22\" height=\"16\" fill=\"#fff\"/><path d=\"M17 33h14M17 38h10\"/><circle cx=\"37\" cy=\"21\" r=\"1.5\" fill=\"#1f1f1f\"/>"};
+
+var TBAR = [["camera", "the camera icon"], ["printer", "the printer icon"], ["document", "the document icon"], ["settings", "the settings icon (the gear)"],
+  ["sheet", "the spreadsheet icon"], ["game", "the game icon"], ["browser", "the browser icon (the globe)"], ["folder", "the folder icon"],
+  ["calc", "the calculator icon"], ["email", "the email icon"]];
+var UPDOWN = ["Up ↗", "Down ↘"];
+var HWW = ["How?", "When?", "Where?"];
+
+var PARTS = [
+  {id:"A", grp:0, title:"Inside your student email", desc:"The inbox is open. Which part do you need?", type:"sim", sim:"inbox", shuffleTasks:true, tasks:[
+    {t:"You want to start an email to Ms Tran.", target:"newmail", rl:"New mail", why:"New mail opens a new message."},
+    {t:"You want to read today's new emails.", target:"inbox", rl:"the Inbox", why:"New emails come to the Inbox."},
+    {t:"You want to check an email. You sent it yesterday.", target:"sent", rl:"Sent Items", why:"Sent Items keeps the emails you sent. In Harbour Mail it was Sent."},
+    {t:"You started an email, but you didn't send it. Find it.", target:"drafts", rl:"Drafts", why:"Drafts keeps emails you started but didn't send."},
+    {t:"You deleted an email by mistake. Where is it now?", target:"deleted", rl:"Deleted Items", why:"Deleted emails go to Deleted Items. In Harbour Mail it was Bin."},
+    {t:"An email comes from a company you don't know. Where does it often go?", target:"junk", rl:"Junk Email", why:"Emails from strangers often go to Junk Email. Don't open them."},
+    {t:"Ms Tran asks you a question. Answer only Ms Tran.", target:"reply", rl:"Reply", why:"Reply answers only the person who sent the email."},
+    {t:"Ms Tran wrote to you and five classmates. Answer all of them.", target:"replyall", rl:"Reply all", why:"Reply all answers everyone in the email."},
+    {t:"Send Hideko's email to your friend Jennie.", target:"forward", rl:"Forward", why:"Forward sends the email to a new person."},
+    {t:"You want to find an old email about a library book.", target:"search", rl:"the search box", why:"Type a word in Search. It finds old emails."},
+    {t:"You want to see your own email address. Tap your initials.", target:"acct", rl:"your initials (GW)", why:"Your initials are in the top right corner. Your email address is under them."},
+    {t:"You finished on a class computer. Leave your email safely.", target:"signout", rl:"Sign out", why:"Sign out = log out = log off. Do it every time."}]},
+  {id:"B", grp:0, title:"A new message", desc:"The new message is open. Find the part that does the job.", type:"sim", sim:"compose", shuffleTasks:true, tasks:[
+    {t:"Type the address of the person you are writing to.", target:"to", rl:"the To box", why:"The To box is for the person you are writing to."},
+    {t:"Send a copy to Linda. Everyone can see Linda's name.", target:"cc", rl:"Cc", why:"Cc sends a copy. Everyone can see the Cc names."},
+    {t:"Send a hidden copy to Jane. Other people can't see her name.", target:"bcc", rl:"Bcc", why:"Bcc sends a hidden copy."},
+    {t:"Write what the email is about.", target:"subject", rl:"Add a subject", why:"Add a subject = the Subject box in Harbour Mail."},
+    {t:"Find your email address. You are the sender.", target:"from", rl:"the From box", why:"From shows your email address."},
+    {t:"Make the name of the room thick and dark.", target:"bold", rl:"B (bold)", why:"B makes words bold."},
+    {t:"Make some words lean.", target:"italic", rl:"I (italic)", why:"I makes words italic."},
+    {t:"Put a line under the date.", target:"underline", rl:"U (underline)", why:"U puts a line under words."},
+    {t:"Add a photo of the room.", target:"attach", rl:"Attach", why:"Attach adds a photo or a file."},
+    {t:"Write your message.", target:"body", rl:"the message box", why:"You write your message in the big box."},
+    {t:"Your email is ready. Send it.", target:"send", rl:"Send", why:"On your student email, Send is at the top, on the left. In Harbour Mail it was at the bottom."},
+    {t:"You don't want this new message. Delete it.", target:"discard", rl:"Discard", why:"Discard deletes the new message."}]},
+  {id:"C", grp:0, title:"Same job, new names", desc:"Harbour Mail and your student email do the same jobs. Some names are different.", type:"q", shuffleQ:true, intro:"names", items:[
+    {tag:"New name", show:"Harbour Mail: New email", q:"What is it on your student email?", opts:["New mail", "Inbox", "Junk Email"], why:"New email → New mail."},
+    {tag:"New name", show:"Harbour Mail: Sent", q:"What is it on your student email?", opts:["Sent Items", "Deleted Items", "Drafts"], why:"Sent → Sent Items."},
+    {tag:"New name", show:"Harbour Mail: Bin", q:"What is it on your student email?", opts:["Deleted Items", "Junk Email", "Sent Items"], why:"Bin → Deleted Items."},
+    {tag:"New name", show:"Harbour Mail: Log out", q:"What is it on your student email?", opts:["Sign out", "Discard", "Forward"], why:"Log out → Sign out. They mean the same."},
+    {tag:"New name", show:"Harbour Mail: Subject", q:"What is it on your student email?", opts:["Add a subject", "Junk Email", "Sent Items"], why:"Subject → Add a subject."},
+    {tag:"New name", show:"Harbour Mail: the bin in a new email", q:"What is it on your student email?", opts:["Discard", "Deleted Items", "Sign out"], why:"In a new message, Discard deletes it."},
+    {tag:"Where is it?", q:"Where is Send on your student email?", opts:["At the top, on the left, above the To box.", "At the bottom, on the left, under the message.", "In the top right corner, under your initials."], why:"Send is at the top. In Harbour Mail it was at the bottom."},
+    {tag:"Where is it?", q:"How do you find Sign out?", opts:["Click on your initials in the top right corner.", "Click on Junk Email on the left side.", "Click on the Send button above the To box."], why:"Click your initials. Then click Sign out."},
+    {tag:"Teacher says", show:"Your teacher: Sign in to your student email.", q:"What do you do?", opts:["Type your email address and password.", "Close your email and go home.", "Write your name on the class list."], why:"Sign in = log in."},
+    {tag:"Same thing?", q:"Sign out, log out, log off. Are they the same?", opts:["Yes. They all mean the same thing.", "No. Log off deletes all your emails.", "No. Sign out sends your email again."], why:"Sign out = log out = log off."}]},
+  {id:"D", grp:0, title:"The keyboard", desc:"Find the key you need.", type:"sim", sim:"keyboard", shuffleTasks:true, tasks:[
+    {t:"Hold it down to make a capital letter.", target:["shiftL", "shiftR"], rl:"Shift", why:"Hold down Shift and press a letter: A."},
+    {t:"Press it with Shift to make @.", target:"k2", rl:"the 2 key", why:"Hold down Shift and press 2: @."},
+    {t:"Press it with Shift to make _ (underscore).", target:"dash", rl:"the dash key", why:"Hold down Shift and press the dash key: _."},
+    {t:"It makes the dot in .com.au.", target:"dot", rl:"the full stop key", why:"Press the full stop key. You say dot."},
+    {t:"It deletes the letter on the left.", target:"back", rl:"Backspace", why:"Backspace deletes the letter on the left."},
+    {t:"Start a new line after See you later,", target:"enter", rl:"Enter", why:"Enter starts a new line. Your name goes on the next line."},
+    {t:"Make a space between two words.", target:"space", rl:"the space bar", why:"The space bar makes a space. No spaces in an email address."},
+    {t:"It makes ALL CAPITAL letters. Don't use it in an email.", target:"caps", rl:"Caps Lock", why:"Caps Lock makes ALL CAPITALS. Press it again to turn it off."},
+    {t:"Type the first letter of Ms Tran's address: t", target:"kt", rl:"the t key", why:"tran_k starts with t. No capital letter."}]},
+  {id:"E", grp:0, title:"Solo run: fix it and send it again", desc:"George's email didn't arrive. Help him fix it.", type:"sim", sim:"solo1", tasks:[
+    {t:"You are at a library computer. Open your email.", target:"email", rl:"the email icon", why:"Your student email opens. You are in the Inbox."},
+    {t:"There is a new email: Undeliverable. Open it.", target:"m0", rl:"the Undeliverable email", why:"It says: Your message was not delivered."},
+    {t:"Read it. Tap the address with the mistake.", target:"badaddr", rl:"tran.k@harbourmail.com.au", why:"tran.k has a dot. Ms Tran's address has an underscore: tran_k."},
+    {t:"Check the email you sent. Where do you look?", target:"sent", rl:"Sent Items", why:"Sent Items keeps the emails you sent."},
+    {t:"Open your email to Ms Tran.", target:"s1", rl:"your email to Ms Tran", why:"There it is. The address is wrong: tran.k"},
+    {t:"Hideko says: Click Forward. Then type the right address.", target:"forward", rl:"Forward", why:"A new message opens with your email inside."},
+    {t:"Type the right address: tran_k@harbourmail.com.au", target:"to", rl:"the To box", why:"You typed tran_k@harbourmail.com.au. Underscore, not dot."},
+    {t:"You checked it. Send it.", target:"send", rl:"Send", why:"Send is at the top, on the left. Your email was sent."},
+    {t:"Did it go? Check it.", target:"sent", rl:"Sent Items", why:"It's in Sent Items, and the address is right this time."},
+    {t:"You finished. Tap your initials.", target:"acct", rl:"your initials (GW)", why:"Your email address and Sign out appear."},
+    {t:"Sign out.", target:"signout", rl:"Sign out", why:"You signed out. Now close the browser."}]},
+  {id:"F", grp:0, title:"Solo run: a comment and a question", desc:"Ms Tran replied to George. Read all of it and answer.", type:"sim", sim:"solo2", tasks:[
+    {t:"Open your email.", target:"email", rl:"the email icon", why:"Your student email opens. You have a new email."},
+    {t:"Open the new email from Ms Tran.", target:"m1", rl:"the email from Ms Tran", why:"Ms Tran's email opens on the right."},
+    {t:"Read it. Tap Ms Tran's comment.", target:"mc", rl:"The room sounds great!", why:"A comment. Say thanks: Thanks! I'm glad you like it."},
+    {t:"Now tap Ms Tran's question.", target:"mq", rl:"How much does it cost?", why:"A question. Answer it in a full sentence."},
+    {t:"Answer only Ms Tran.", target:"reply", rl:"Reply", why:"The reply opens. Ms Tran's address is in the To box."},
+    {t:"Write your answer.", target:"body", rl:"the message box", why:"You said thanks and answered the question."},
+    {t:"Send your reply.", target:"send", rl:"Send", why:"Send is at the top. Your reply was sent."},
+    {t:"Did it go? Check it.", target:"sent", rl:"Sent Items", why:"Your reply is in Sent Items."},
+    {t:"You finished. Tap your initials.", target:"acct", rl:"your initials (GW)", why:"Your email address and Sign out appear."},
+    {t:"Sign out.", target:"signout", rl:"Sign out", why:"You signed out. Now close the browser."}]},
+
+  {id:"G", grp:1, title:"New expressions", desc:"George and Hideko's expressions. What do they mean?", type:"q", shuffleQ:true, items:[
+    {tag:"Expression", q:"\"My bad.\" What does it mean?", opts:["It's my mistake. Sorry.", "I feel sick today.", "That's a bad email."], why:"My bad = my mistake. It's informal."},
+    {tag:"Expression", q:"\"Bummer.\" What does it mean?", opts:["That's bad luck.", "That's a good idea.", "Please wait a minute."], why:"Bummer = bad luck. We say it when something goes wrong."},
+    {tag:"Expression", q:"\"It is what it is.\" What does it mean?", opts:["That's how it is. We can't change it.", "What is it? I can't see it on the screen.", "It's a new thing. Let's try it today."], why:"It is what it is = we can't change it, so we accept it."},
+    {tag:"Expression", q:"\"It's an easy fix.\" What does it mean?", opts:["It's simple to make it right.", "It's very hard to make it right.", "The computer is broken now."], why:"An easy fix = a simple way to make it right."},
+    {tag:"Expression", q:"\"Happy days!\" What does it mean?", opts:["Great! I'm really happy about that.", "Have a good holiday next week.", "Every day is the same for me."], why:"Happy days! = Great! I'm happy."},
+    {tag:"Expression", q:"\"Sweet as.\" What does it mean?", opts:["Great. That's fine.", "It's very sugary.", "I'm not sure."], why:"Sweet as = great, fine. It's very Australian."},
+    {tag:"Expression", q:"\"Catch you later.\" What does it mean?", opts:["Goodbye. See you soon.", "Wait for me here.", "Throw me the ball."], why:"Catch you later = goodbye, see you soon."},
+    {tag:"Expression", q:"\"Talk soon.\" What does it mean?", opts:["We'll talk or write again soon.", "Please talk more slowly to me.", "Don't talk now. Be quiet."], why:"Talk soon is a friendly closing."},
+    {tag:"Use it", show:"George sees his mistake in the address.", q:"What does George say?", opts:["My bad.", "Happy days!", "Talk soon."], why:"My bad = my mistake."},
+    {tag:"Use it", show:"The email arrived! George is really happy.", q:"What does George say?", opts:["Happy days!", "Bummer.", "My bad."], why:"Happy days! = I'm really happy."},
+    {tag:"To your teacher", q:"Which closing is good in an email to your teacher?", opts:["Talk soon,", "Bummer,", "My bad,"], why:"Talk soon, is friendly and polite. Keep My bad and Bummer for friends."}]},
+  {id:"H", grp:1, title:"Say what's wrong, then ask", desc:"Three steps: the problem, what you did, a clear question.", type:"q", shuffleQ:true, intro:"strategy", items:[
+    {tag:"Step 1", show:"Your email isn't in Sent Items.", q:"Which sentence says the problem?", opts:["My email isn't in Sent Items.", "I sent my email to Ms Tran.", "Can you help me, please?"], why:"Step 1: say the problem."},
+    {tag:"Step 2", show:"Your email didn't arrive.", q:"Which sentence says what you did?", opts:["I clicked Send last night.", "My email didn't arrive.", "Where is Sent Items?"], why:"Step 2: say what you did. Use the past simple."},
+    {tag:"Step 3", show:"You think the address is wrong.", q:"Which one is a clear question?", opts:["Can you check the address?", "My email didn't arrive today.", "I typed Ms Tran's address."], why:"Step 3: ask a clear question."},
+    {tag:"All three", q:"Which is the best way to ask for help?", opts:["Ms Tran didn't get my email. I sent it last night. Can you help me?", "Help! My email! It's not working! Ms Tran! Last night! Now!", "I sent an email last night. Can I have your password, please?"], why:"The problem, what you did, a clear question."},
+    {tag:"Ask", show:"You can't find Send.", q:"What do you ask?", opts:["Where is Send on this screen?", "Can you write my email for me?", "Why is this screen so small?"], why:"A clear question about the problem."},
+    {tag:"Say it back", show:"Hideko: Click on your initials. Then click Sign out.", q:"You are not sure. What do you say?", opts:["So I click on GW, then Sign out?", "OK. I'll send it again now.", "My bad. I forgot my password."], why:"Say the steps back to check."},
+    {tag:"Safe", show:"A classmate says: Give me your password. I'll fix it.", q:"What do you do?", opts:["Say no. Ask your teacher for help.", "Say yes. Write it on the board.", "Send it to them in an email."], why:"Never give your password to anyone."},
+    {tag:"Answer", show:"Your teacher: What's wrong?", q:"What do you say?", opts:["I forgot my password. What do I do?", "I'm fine, thanks. And you?", "Yes, I like this email program."], why:"Say the problem, then ask."}]},
+  {id:"I", grp:1, title:"Where is the strong part?", desc:"Tap Hear it. Which part is strong?", type:"q", shuffleQ:true, intro:"stress", items:[
+    {k:"fixed", tag:"Strong part", sayw:"inbox", q:"inbox", opts:["IN·box", "in·BOX"], ans:0, why:"IN·box"},
+    {k:"fixed", tag:"Strong part", sayw:"subject", q:"subject", opts:["SUB·ject", "sub·JECT"], ans:0, why:"SUB·ject: the subject of an email."},
+    {k:"fixed", tag:"Strong part", sayw:"reply", q:"reply", opts:["RE·ply", "re·PLY"], ans:1, why:"re·PLY"},
+    {k:"fixed", tag:"Strong part", sayw:"delete", q:"delete", opts:["DE·lete", "de·LETE"], ans:1, why:"de·LETE"},
+    {k:"fixed", tag:"Strong part", sayw:"forward", q:"forward", opts:["FOR·ward", "for·WARD"], ans:0, why:"FOR·ward"},
+    {k:"fixed", tag:"Strong part", sayw:"password", q:"password", opts:["PASS·word", "pass·WORD"], ans:0, why:"PASS·word"},
+    {k:"fixed", tag:"Strong part", sayw:"attach", q:"attach", opts:["AT·tach", "at·TACH"], ans:1, why:"at·TACH"},
+    {k:"fixed", tag:"Strong part", sayw:"message", q:"message", opts:["MES·sage", "mes·SAGE"], ans:0, why:"MES·sage"},
+    {k:"fixed", tag:"Strong part", sayw:"keyboard", q:"keyboard", opts:["KEY·board", "key·BOARD"], ans:0, why:"KEY·board"},
+    {k:"fixed", tag:"Strong part", sayw:"discard", q:"discard", opts:["DIS·card", "dis·CARD"], ans:1, why:"dis·CARD"},
+    {k:"fixed", tag:"Two-word verb", sayw:"sign out", q:"sign out", opts:["SIGN out", "sign OUT"], ans:1, why:"Two-word verbs: the second word is strong. sign OUT."},
+    {k:"fixed", tag:"Two-word verb", sayw:"log in", q:"log in", opts:["LOG in", "log IN"], ans:1, why:"Two-word verbs: the second word is strong. log IN."}]},
+  {id:"J", grp:1, title:"Say the keys", desc:"You hear the keys. What do you type?", type:"q", shuffleQ:true, intro:"keys", items:[
+    {tag:"You hear", hear:"x, i, a, Shift and dash, w, Shift and 2, gmail, full stop, com", show:"You hear: x, i, a, Shift and dash, w, Shift and 2, gmail, full stop, com", q:"What do you type?", opts:["xia_w@gmail.com", "xia-w@gmail.com", "xiaw@gmail.com"], why:"Shift and dash = _. Shift and 2 = @."},
+    {tag:"You hear", hear:"Shift and h, i, space bar, Shift and j, a, n, e, comma", show:"You hear: Shift and h, i, space bar, Shift and j, a, n, e, comma", q:"What do you type?", opts:["Hi Jane,", "hi Jane,", "Hi jane,"], why:"Shift makes a capital: H and J."},
+    {tag:"You hear", hear:"a, l, a, n, full stop, k, Shift and 2, gmail, full stop, com", show:"You hear: a, l, a, n, full stop, k, Shift and 2, gmail, full stop, com", q:"What do you type?", opts:["alan.k@gmail.com", "alan_k@gmail.com", "alan.k2@gmail.com"], why:"full stop = . (dot). Shift and 2 = @."},
+    {tag:"You hear", hear:"j, i, a, o, Shift and dash, l, Shift and 2, outlook, full stop, com", show:"You hear: j, i, a, o, Shift and dash, l, Shift and 2, outlook, full stop, com", q:"What do you type?", opts:["jiao_l@outlook.com", "jiao-l@outlook.com", "jiao_l@outlookcom"], why:"Shift and dash = _. Don't forget the dot before com."},
+    {tag:"You hear", show:"You hear: Talk soon, comma, Enter, Shift and c, o, c, o", q:"What do you see?", opts:["Talk soon, (Coco on the next line)", "Talk soon, Coco (on one line)", "Talk soon (Coco on the next line)"], why:"Enter starts a new line. The name goes on the next line."},
+    {tag:"Caps Lock", show:"Caps Lock is on. You type n, a, m.", q:"What do you see?", opts:["NAM", "Nam", "nam"], why:"Caps Lock makes ALL CAPITALS. Press it again to turn it off."},
+    {tag:"Fix it", show:"You typed tran_kk. You want tran_k.", q:"Which key do you press one time?", opts:["Backspace", "Enter", "Shift"], why:"Backspace deletes the letter on the left."},
+    {tag:"Tell a classmate", q:"How do you make @? Tell a classmate.", opts:["Hold down Shift and press 2.", "Hold down Caps Lock and press 2.", "Press the full stop key two times."], why:"Shift and 2 = @."}]},
+  {id:"K", grp:1, title:"Compound sentences in the past", desc:"Join two ideas with and, but or because. Use the past simple.", type:"q", shuffleQ:true, intro:"compound", items:[
+    {tag:"Past simple", q:"We ___ the train and it was quick.", opts:["took", "take", "taked"], why:"take → took."},
+    {tag:"Joining word", q:"I loved the class ___ the teacher was kind.", opts:["because", "but", "or"], why:"because gives the reason."},
+    {tag:"Joining word", q:"The park was beautiful, ___ it was very cold.", opts:["but", "because", "or"], why:"but shows a difference: beautiful, but cold."},
+    {tag:"Join it", show:"Linda went to the market. Linda bought some fruit.", q:"Join the two sentences.", opts:["Linda went to the market and bought some fruit.", "Linda went to the market because bought some fruit.", "Linda went to the market, but Linda buy some fruit."], why:"Same person: you can drop the second Linda."},
+    {tag:"Comma", q:"Which one is right?", opts:["I liked the café because the staff were friendly.", "I liked the café, because the staff were friendly.", "I liked the café. Because the staff were friendly."], why:"No comma before because."},
+    {tag:"Past simple", q:"Last week Nam ___ a quiet room at the library.", opts:["found", "finded", "find"], why:"find → found."},
+    {tag:"Which one?", q:"Which is a compound sentence in the past?", opts:["We walked there and we had lunch.", "We walk there every Sunday morning.", "We will walk there next Sunday."], why:"Two ideas, joined with and, in the past simple."},
+    {tag:"Fix it", show:"Yesterday Jason go to the library and he borrowed a book.", q:"Choose the correct sentence.", opts:["Yesterday Jason went to the library and he borrowed a book.", "Yesterday Jason go to the library and he borrow a book.", "Yesterday Jason goes to the library and he borrowed a book."], why:"Yesterday = past simple: went."},
+    {tag:"Past simple", q:"The bus ___ late, but we got there on time.", opts:["was", "is", "were"], why:"The bus = it. Past: was."},
+    {tag:"Question", q:"Did you ___ Sent Items?", opts:["check", "checked", "checking"], why:"Did you + verb. No -ed."}]},
+  {id:"L", grp:1, title:"How, when, where?", desc:"Adverbs and phrases tell the reader more.", type:"q", shuffleQ:true, intro:"hww", items:[
+    {k:"fixed", tag:"How, when or where?", q:"by train", opts:HWW, ans:0, why:"by train tells us how."},
+    {k:"fixed", tag:"How, when or where?", q:"every Thursday", opts:HWW, ans:1, why:"every Thursday tells us when."},
+    {k:"fixed", tag:"How, when or where?", q:"near the station", opts:HWW, ans:2, why:"near the station tells us where."},
+    {k:"fixed", tag:"How, when or where?", q:"quickly", opts:HWW, ans:0, why:"quickly tells us how."},
+    {k:"fixed", tag:"How, when or where?", q:"after class", opts:HWW, ans:1, why:"after class tells us when."},
+    {k:"fixed", tag:"How, when or where?", q:"opposite the park", opts:HWW, ans:2, why:"opposite the park tells us where."},
+    {tag:"on, at, in", q:"We can meet ___ Saturday.", opts:["on", "at", "in"], why:"on + a day."},
+    {tag:"on, at, in", q:"The room opens ___ 10 am.", opts:["at", "on", "in"], why:"at + a time."},
+    {tag:"on, at, in", q:"It's quiet there ___ the afternoon.", opts:["in", "on", "at"], why:"in + part of the day."},
+    {tag:"on, at, in", q:"The bus comes ___ five minutes.", opts:["in", "at", "on"], why:"in + how long until."},
+    {tag:"on, at, in", q:"The club meets ___ lunchtime.", opts:["at", "in", "on"], why:"at lunchtime."},
+    {tag:"on, at, in", q:"The library is closed ___ the weekend.", opts:["on", "in", "at"], why:"on the weekend."},
+    {tag:"Where does it go?", q:"Which one is right?", opts:["We can get there easily by bus.", "We can easily by bus get there.", "Easily by bus we can there get."], why:"How and when phrases usually go at the end."}]},
+  {id:"M", grp:1, title:"Ask the question", desc:"Here is the answer. Choose the question.", type:"q", shuffleQ:true, items:[
+    {tag:"Question", show:"Answer: It takes about fifteen minutes by train.", q:"What is the question?", opts:["How long does it take?", "How much does it take?", "How many does it take?"], why:"How long ...? asks about time."},
+    {tag:"Question", show:"Answer: It opens at 8:30 am.", q:"What is the question?", opts:["What time does it open?", "What time it opens?", "What time does it opens?"], why:"What time does it + verb (no -s)?"},
+    {tag:"Question", show:"Answer: We can meet on Tuesday.", q:"What is the question?", opts:["When can we meet?", "When we can meet?", "When can we meeting?"], why:"When + can + we + verb?"},
+    {tag:"Question", show:"Answer: It costs five dollars.", q:"What is the question?", opts:["How much does it cost?", "How many does it cost?", "How much it costs?"], why:"How much ...? asks about a price."},
+    {tag:"Question", show:"Answer: We can get there on foot.", q:"What is the question?", opts:["How can we get there?", "How we can get there?", "Where can we get there?"], why:"How ...? asks about the way."},
+    {tag:"Question", show:"Answer: It's opposite the post office.", q:"What is the question?", opts:["Where is it?", "Where it is?", "When is it?"], why:"Where is it? Put is before it."},
+    {tag:"Question", show:"Answer: Yes, it's free for students.", q:"What is the question?", opts:["Is it free for students?", "It is free for students?", "Does it free for students?"], why:"A yes / no question: Is it ...?"},
+    {tag:"Question", show:"Answer: It closes at 5 pm on Saturdays.", q:"What is the question?", opts:["What time does it close on Saturdays?", "What time it closes on Saturdays?", "How long does it close on Saturdays?"], why:"What time does it + verb (no -s)?"}]},
+  {id:"N", grp:1, title:"Read it: Yuko's email", desc:"Read Yuko's idea and Ms Tran's reply. Answer the questions.", type:"q", shuffleQ:true, intro:"yuko", items:[
+    {tag:"Read", q:"Who is Yuko writing to?", opts:["Ms Tran, her teacher", "Hideko, a classmate", "the community centre"], why:"To: tran_k@harbourmail.com.au. Hi Ms Tran."},
+    {tag:"Read", q:"Where is the Banksia Room?", opts:["at the community centre in Chatswood", "at the library in Lane Cove", "next to the college in Crows Nest"], why:"a meeting room at the community centre in Chatswood."},
+    {tag:"Read", q:"How can the class get there?", opts:["by train, then a short walk", "by bus, then a short ferry", "by car, then a long walk"], why:"by train. The station is a short walk from the centre."},
+    {tag:"Read", q:"When did Yuko go there?", opts:["last week", "last month", "yesterday"], why:"I went there last week."},
+    {tag:"Read", q:"Why is it a good place for the club?", opts:["It's quiet in the morning.", "It's open late every night.", "It's next to the beach."], why:"... because it's quiet in the morning."},
+    {tag:"Language", q:"Which sentence is a compound sentence in the past?", opts:["I went there last week and I liked it.", "It has big windows and a lot of chairs.", "Can we meet there on Tuesday mornings?"], why:"Two ideas, in the past, joined with and."},
+    {tag:"Language", q:"Find the phrase for how.", opts:["by train", "last week", "in Chatswood"], why:"by train tells us how. last week = when. in Chatswood = where."},
+    {tag:"The reply", q:"Ms Tran's reply has a comment and a question. Which part is the comment?", opts:["Big windows sound lovely!", "What time does the room open?", "Cheers, Ms Tran"], why:"A comment says what Ms Tran thinks."},
+    {tag:"The reply", q:"Which reply from Yuko is best?", opts:["Thanks! It opens at 9 am.", "Thanks! It's a really nice room.", "Dear Ms Tran, I wish to inform you."], why:"Say thanks. Answer the question."}]},
+  {id:"O", grp:1, title:"Fix it with the code", desc:"Each line has one mistake. Choose the correct line.", type:"q", shuffleQ:true, intro:"code", items:[
+    {tag:"C", show:"my idea is the park in Lane Cove.   (C)", q:"Choose the correct line.", opts:["My idea is the park in Lane Cove.", "my Idea is the park in Lane Cove.", "My idea is the Park in lane cove."], why:"C = capital letter. Start with a capital: My."},
+    {tag:"A", show:"It has a big kitchen and a outdoor area.   (A)", q:"Choose the correct line.", opts:["It has a big kitchen and an outdoor area.", "It has a big kitchen and the a outdoor area.", "It has big kitchen and a outdoors area."], why:"A = article. an before a vowel sound: an outdoor area."},
+    {tag:"SV", show:"The room have free tea and coffee.   (SV)", q:"Choose the correct line.", opts:["The room has free tea and coffee.", "The room having free tea and coffee.", "The rooms has free tea and coffee."], why:"SV = subject and verb. The room = it: has."},
+    {tag:"WT", show:"Last week I visit the centre.   (WT)", q:"Choose the correct line.", opts:["Last week I visited the centre.", "Last week I will visit the centre.", "Last week I am visiting the centre."], why:"WT = wrong tense. Last week = past simple: visited."},
+    {tag:"WF", show:"We can get there quick by train.   (WF)", q:"Choose the correct line.", opts:["We can get there quickly by train.", "We can get there quickest by train.", "We can quick get there by train."], why:"WF = wrong form. An action needs an adverb: quickly."},
+    {tag:"P", show:"Can we meet on Tuesday   (P)", q:"Choose the correct line.", opts:["Can we meet on Tuesday?", "Can we meet on Tuesday.", "Can we meet, on Tuesday"], why:"P = punctuation. A question ends with ?"},
+    {tag:"Sp", show:"The centre is near the libary.   (Sp)", q:"Choose the correct line.", opts:["The centre is near the library.", "The centre is near the libery.", "The centre is near the librery."], why:"Sp = spelling: library."},
+    {tag:"MW", show:"It's a good place ⌃ our club.   (MW)", q:"Choose the correct line.", opts:["It's a good place for our club.", "It's a good place to our club.", "It's a good place our club for."], why:"MW = missing word: a good place for our club."}]},
+  {id:"P", grp:1, title:"Problems and fixes", desc:"Something goes wrong. What do you do?", type:"q", shuffleQ:true, items:[
+    {tag:"Problem", show:"Your email is in Drafts. It isn't in Sent Items.", q:"What do you do?", opts:["Open Drafts, open the email and click Send.", "Sign out now and close the browser quickly.", "Write the same email again in Junk Email."], why:"It didn't go. Open it in Drafts and click Send."},
+    {tag:"Problem", show:"You get an email: Undeliverable.", q:"What do you do?", opts:["Check the address. Fix it and send it again.", "Delete it. Your email arrived on time.", "Click Reply all and say thanks to everyone."], why:"Undeliverable = it didn't arrive. Check the address."},
+    {tag:"Problem", show:"You typed the subject in the To box.", q:"What do you do?", opts:["Delete it. Type it in Add a subject.", "Click Send. Ms Tran can still read it.", "Click Bcc and type the subject again."], why:"The subject goes in Add a subject."},
+    {tag:"Problem", show:"You clicked Reply all. Only Ms Tran needs your answer.", q:"What do you do?", opts:["Delete the other names. Then click Send.", "Click Send. Everyone needs your answer.", "Click Forward and type Ms Tran's name."], why:"Only Ms Tran in the To box."},
+    {tag:"Problem", show:"You forgot your password.", q:"What do you do?", opts:["Ask your teacher for help.", "Ask a friend for their password.", "Try ten new passwords quickly."], why:"Ask your teacher. Never use a friend's password."},
+    {tag:"Problem", show:"You want to check that your email went.", q:"Where do you look?", opts:["Sent Items", "Junk Email", "Deleted Items"], why:"Sent Items keeps the emails you sent."},
+    {tag:"Problem", show:"An email from a company you don't know is in Junk Email.", q:"What do you do?", opts:["Don't open it. Don't click the links.", "Open it and click all the links.", "Forward it to all your classmates."], why:"Junk emails are often not safe."},
+    {tag:"Problem", show:"Ms Tran's address: tran_k   You typed: tran-k", q:"What is wrong?", opts:["You typed a dash, not an underscore.", "You typed a dot, not an underscore.", "You forgot the @ in the address."], why:"- is dash. _ is underscore."},
+    {tag:"Problem", show:"You can't make the @.", q:"What do you do?", opts:["Hold down Shift and press 2.", "Press Caps Lock and type at.", "Type (at) with two brackets."], why:"Shift and 2 = @."}]},
+  {id:"Q", grp:1, title:"The whole job", desc:"Steps, short replies and the practice run.", type:"q", shuffleQ:true, items:[
+    {tag:"Steps", q:"What do you do first?", opts:["Sign in to your student email.", "Click Send at the top of the screen.", "Type a short subject for your email."], why:"First, sign in."},
+    {tag:"Steps", q:"You clicked New mail. What do you do next?", opts:["Type your teacher's address in the To box.", "Open Sent Items and check your email.", "Sign out and close the browser."], why:"Then the address in the To box."},
+    {tag:"Steps", q:"What do you do before you click Send?", opts:["Check the email carefully.", "Sign out of your email.", "Open Deleted Items."], why:"Check it, then send it."},
+    {tag:"Steps", q:"You clicked Send. What do you do now?", opts:["Open Sent Items. Check it is there.", "Click Discard. Then sign out.", "Write the same email again."], why:"Check Sent Items."},
+    {tag:"Steps", q:"Which order is right for the last steps?", opts:["Click Send, check Sent Items, then sign out.", "Sign out, click Send, then check Sent Items.", "Check Sent Items, sign out, then click Send."], why:"Send, check, sign out. Then close the browser."},
+    {tag:"Reply", show:"Ms Tran: Great idea! How long is the class?", q:"Which reply is best?", opts:["Thanks! It's two hours long.", "Thanks! It's on Mondays.", "Thanks! It's a great class."], why:"How long? asks about time."},
+    {tag:"Reply", show:"Ms Tran: I like the park idea. Can we walk there?", q:"Which reply is best?", opts:["Thanks! Yes, we can. It's ten minutes from the college.", "Thanks! The park is big and it has a café near the gate.", "Thanks! I went there last month with my family and friends."], why:"Say thanks. Answer the question: yes, and how long."},
+    {tag:"The closing", q:"Which one is right?", opts:["Talk soon, (and Coco on the next line)", "Talk soon, Coco (both on the same line)", "talk soon coco (all on the same line)"], why:"The closing and your name go on two lines."},
+    {tag:"Teacher says", show:"Your teacher: Wait for the reply.", q:"What do you do?", opts:["Stay signed in. Look in your Inbox.", "Sign out now and go home for the day.", "Send the same email to your teacher again."], why:"Wait for the reply = don't sign out yet."},
+    {tag:"Practice run", q:"In the practice run, who writes the teacher's reply?", opts:["Your partner. It's a short reply with a question.", "Nobody. There is no reply in the practice run.", "You. You write the email and the reply."], why:"Your partner is the teacher."},
+    {tag:"Your email", q:"Your email needs an adverb or a phrase for how. Which sentence has one?", opts:["We can get there easily by bus.", "The room is quiet and very big.", "Can we meet there on Tuesday?"], why:"easily and by bus tell us how."}]}
+];
+var PCOL = {G:["#B35400", "#F7E1CC"], H:["#2F5FA8", "#E3EBF7"], I:["#0F7D7D", "#DDF0F0"], J:["#6A4C9C", "#ECE6F5"], K:["#2E7D4F", "#E2F1E7"], L:["#8A6D00", "#F5EDCC"],
+  M:["#9C2F6B", "#F5E2EC"], N:["#A3462B", "#F6E4DE"], O:["#8B1E3F", "#F5DEE5"], P:["#1B3A5C", "#E2E9F1"], Q:["#3B4A6B", "#E4E8F0"]};
+function colOf(P){ if(PCOL[P.id]) return {c:PCOL[P.id][0], ink:"#ffffff", tint:PCOL[P.id][1]}; return {c:"#F5A20F", ink:"#141414", tint:"#FFF0D2"}; }
+var GROUPS = [{t:"Use your student email", c:"#F5A20F"}, {t:"What you know", c:"linear-gradient(90deg,#B35400 0 33%,#2E7D4F 33% 66%,#1B3A5C 66%)"}];
+/* give every scored item an id */
+(function(){
+  for(var p = 0; p < PARTS.length; p++){
+    var P = PARTS[p];
+    if(P.type === "q"){ var n = 0; for(var i = 0; i < P.items.length; i++){ if(P.items[i].k !== "page"){ n++; P.items[i].id = P.id + n; } } }
+  }
+})();
+function scored(P){
+  if(P.type === "sim"){ var a = []; for(var i = 0; i < P.tasks.length; i++) a.push(P.id + "t" + i); return a; }
+  var b = []; for(var j = 0; j < P.items.length; j++) if(P.items[j].k !== "page") b.push(P.items[j].id); return b;
+}
+var TOTAL = 0; for(var tp = 0; tp < PARTS.length; tp++) TOTAL += scored(PARTS[tp]).length;
+
+/* ===================== STATE ===================== */
+var S = blank();
+function blank(){ return {v:"menu", p:0, size:1, ans:{}, ord:{}, seq:{}, step:{}, typed:{}, fb:{}, last:null}; }
+function load(){
+  try{ localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); storeOK = true;
+    var raw = localStorage.getItem(KEY); if(raw){ var o = JSON.parse(raw); for(var k in o) if(o.hasOwnProperty(k)) S[k] = o[k]; } }catch(e){ storeOK = false; }
+  if(S.size == null || S.size < 0 || S.size >= SIZES.length) S.size = 1;
+}
+var savedT = null;
+function save(show){
+  if(!storeOK) return;
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ return; }
+  if(show){ var el = document.getElementById("saved"); el.className = "saved on"; clearTimeout(savedT); savedT = setTimeout(function(){ el.className = "saved"; }, 900); }
+}
+function stepOf(P){ return S.step[P.id] || 0; }
+function taskSeq(P){
+  if(!P.shuffleTasks) return range(P.tasks.length);
+  if(!S.seq[P.id]) S.seq[P.id] = shuffle(range(P.tasks.length));
+  return S.seq[P.id];
+}
+function remaining(P){
+  if(P.type === "sim") return P.tasks.length - stepOf(P);
+  var ks = scored(P), r = 0; for(var i = 0; i < ks.length; i++) if(!S.ans[ks[i]]) r++; return r;
+}
+function answeredN(P){ var ks = scored(P), n = 0; for(var i = 0; i < ks.length; i++) if(S.ans[ks[i]]) n++; return n; }
+function rightN(P){ var ks = scored(P), n = 0; for(var i = 0; i < ks.length; i++) if(S.ans[ks[i]] && S.ans[ks[i]].ok) n++; return n; }
+function totals(){ var r = 0, a = 0; for(var i = 0; i < PARTS.length; i++){ r += rightN(PARTS[i]); a += answeredN(PARTS[i]); } return {r:r, a:a}; }
+function partDone(P){ return remaining(P) === 0; }
+
+/* ===================== SIMULATIONS ===================== */
+var CUR = null;
+function hit(id, label, cls, kids){
+  var c = "hit" + (cls ? " " + cls : "");
+  if(FLASH && FLASH.id === id) c += FLASH.ok ? " okf" : " nof";
+  return h("button", {cls:c, "data-hit":id, "aria-label":label, onclick:function(){ simTap(CUR, id, label); }}, kids);
+}
+function isTarget(T, id){ if(T.target instanceof Array) return T.target.indexOf(id) > -1; return T.target === id; }
+function simTap(P, id, label){
+  var st = stepOf(P);
+  if(st >= P.tasks.length) return;
+  var seq = taskSeq(P), ti = seq[st], T = P.tasks[ti], key = P.id + "t" + ti;
+  if(isTarget(T, id)){
+    if(!S.ans[key]) S.ans[key] = {ok:true, pick:label};
+    S.step[P.id] = st + 1; S.fb[P.id] = {ok:true, msg:T.why}; FLASH = {id:id, ok:true};
+  } else {
+    if(!S.ans[key]) S.ans[key] = {ok:false, pick:label};
+    S.fb[P.id] = {ok:false, msg:"That is " + label + ". Try again."}; FLASH = {id:id, ok:false};
+  }
+  save(true); renderKeep();
+}
+
+function tabs(list, plus){
+  var row = h("div", {cls:"tabs"});
+  for(var i = 0; i < list.length; i++){
+    var t = list[i];
+    row.appendChild(h("div", {cls:"tabw" + (t.on ? " on" : "")}, [hit(t.id, t.label, "tabt", t.text), hit(t.xid, t.xlabel, "tabx", "✕")]));
+  }
+  if(plus !== false) row.appendChild(hit("plus", "the plus to open a new tab", "", "+"));
+  return row;
+}
+function tool(url){
+  return h("div", {cls:"tool"}, [
+    hit("back", "the back arrow", "", "←"), hit("fwd", "the forward arrow", "fwd", "→"), hit("refresh", "the refresh button", "", "⟳"),
+    hit("addr", "the address bar", "addr", url ? "🔒 " + url : "Search or type a web address"),
+    hit("star", "the star (save this page)", "", "☆"), hit("dots", "the three dots menu", "", "⋮")]);
+}
+function oneTab(text, url){ return h("div", {cls:"chrome"}, [tabs([{id:"tab1", label:"the tab", text:text, xid:"x1", xlabel:"the x on the tab", on:true}]), tool(url)]); }
+function scrollCol(){ return h("div", {cls:"scol"}, hit("scroll", "the scroll bar", "", h("span", {cls:"thumb"}))); }
+function pageWrap(kids){ return h("div", {cls:"page"}, [h("div", {cls:"pcont"}, kids), scrollCol()]); }
+function doneTargets(P, st){ var seq = taskSeq(P), d = {}; for(var i = 0; i < st; i++){ var t = P.tasks[seq[i]].target; d[t instanceof Array ? t[0] : t] = true; } return d; }
+function closedScreen(msg){
+  return h("div", null, [h("div", {cls:"chrome"}, [h("div", {cls:"tabs"}, [h("div", {cls:"tabw on"}, h("span", {cls:"hit tabt"}, "New tab"))]), tool("")]),
+    h("div", {cls:"blank"}, msg)]);
+}
+
+/* desktop with a taskbar */
+function desktop(done){
+  var bar = h("div", {cls:"tbar4"});
+  var start = h("span", {cls:"startb", "aria-hidden":"true"}); start.innerHTML = '<svg viewBox="0 0 20 20"><rect x="1" y="1" width="8" height="8" fill="#fff"/><rect x="11" y="1" width="8" height="8" fill="#fff"/><rect x="1" y="11" width="8" height="8" fill="#fff"/><rect x="11" y="11" width="8" height="8" fill="#fff"/></svg>';
+  bar.appendChild(start);
+  for(var i = 0; i < TBAR.length; i++){
+    var ic = h("span", {cls:"ic sm"}); ic.innerHTML = '<svg viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="#1f1f1f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + ICSVG[TBAR[i][0]] + '</svg>';
+    bar.appendChild(hit(TBAR[i][0], TBAR[i][1], done && done[TBAR[i][0]] ? "done" : "", ic));
+  }
+  return h("div", {cls:"desk"}, [h("div", {cls:"wall wall4"}, h("span", {cls:"clock"}, [h("b", null, "9:41 am"), h("span", null, "28/10/2026")])), bar]);
+}
+
+/* student email */
+var ME = "george.w@student-email.edu.au", TRAN = "tran_k@harbourmail.com.au", BAD = "tran.k@harbourmail.com.au";
+function stuHead(o){
+  var d = o.done || {};
+  var kids = [h("div", {cls:"sh6"}, [h("span", {cls:"slogo"}, "Student email"), hit("search", "the search box", "msearch6" + (d.search ? " done" : ""), "🔎 Search"),
+    hit("acct", "your initials (GW)", "acct6" + (d.acct ? " done" : ""), "GW")])];
+  if(o.acct) kids.push(h("div", {cls:"apanel"}, [h("span", {cls:"amail"}, ME), hit("signout", "Sign out", "sout6" + (d.signout ? " done" : ""), "Sign out")]));
+  return kids;
+}
+function stuTab(title, url, o, kids){ return h("div", null, [oneTab(title + " - Student email", url), h("div", {cls:"mail5"}, stuHead(o).concat(kids))]); }
+/* o.folder: inbox | sent; o.open: m0 | m1 | s1 | s2 | none; o.rows: "fix" | "plain"; o.fixed: the new sent email exists; o.sentReply */
+function inboxView(o){
+  o = o || {}; var d = o.done || {};
+  var fold = o.folder || "inbox";
+  var side = h("div", {cls:"mside"}, [hit("newmail", "New mail", "mnew" + (d.newmail ? " done" : ""), "✎ New mail"),
+    hit("inbox", "the Inbox", "mf" + (fold === "inbox" ? " on" : "") + (d.inbox ? " done" : ""), o.unread === 0 ? "Inbox" : "Inbox (" + (o.unread == null ? 3 : o.unread) + ")"),
+    hit("drafts", "Drafts", "mf" + (d.drafts ? " done" : ""), "Drafts"),
+    hit("sent", "Sent Items", "mf" + (fold === "sent" ? " on" : "") + (d.sent ? " done" : ""), "Sent Items"),
+    hit("deleted", "Deleted Items", "mf" + (d.deleted ? " done" : ""), "Deleted Items"),
+    hit("junk", "Junk Email", "mf" + (d.junk ? " done" : ""), "Junk Email")]);
+  var list = h("div", {cls:"mlist"}), read;
+  var btns = h("div", {cls:"mbtns"}, [hit("reply", "Reply", "mbt" + (d.reply ? " done" : ""), "↩ Reply"), hit("replyall", "Reply all", "mbt" + (d.replyall ? " done" : ""), "↩↩ Reply all"), hit("forward", "Forward", "mbt" + (d.forward ? " done" : ""), "↪ Forward")]);
+  if(fold === "sent"){
+    if(o.fixed) list.appendChild(hit("s2", "your new email to Ms Tran", "mrow on", [h("b", null, "To: " + TRAN), h("span", null, h("b", null, "FW: Idea for our conversation club")), h("span", {cls:"mprev"}, "Hi Ms Tran, How's it going? I have an idea ...")]));
+    if(o.sentReply) list.appendChild(hit("s3", "your reply to Ms Tran", "mrow on", [h("b", null, "To: " + TRAN), h("span", null, h("b", null, "Re: Idea for our conversation club")), h("span", {cls:"mprev"}, "Hi Ms Tran, Thanks! I'm glad you like it ...")]));
+    list.appendChild(hit("s1", "your email to Ms Tran", "mrow" + (o.open === "s1" ? " on" : ""), [h("b", null, "To: " + (o.goodAddr ? TRAN : BAD)), h("span", null, h("b", null, "Idea for our conversation club")), h("span", {cls:"mprev"}, "Hi Ms Tran, How's it going? I have an idea ...")]));
+    if(o.open === "s1") read = h("div", {cls:"mread"}, [btns, h("div", {cls:"mrh"}, "Idea for our conversation club"), h("div", {cls:"mrm"}, "From: me · To: " + (o.goodAddr ? TRAN : BAD)),
+      h("p", null, "Hi Ms Tran,"), h("p", null, "How's it going? I have an idea for our conversation club ..."), h("p", {cls:"gap"}, "See you later,"), h("p", null, "George")]);
+    else if(o.fixed) read = h("div", {cls:"mread"}, [h("div", {cls:"mrh"}, "FW: Idea for our conversation club"), h("div", {cls:"mrm"}, "From: me · To: " + TRAN), h("p", null, "✅ The address is right this time: tran_k")]);
+    else if(o.sentReply) read = h("div", {cls:"mread"}, [h("div", {cls:"mrh"}, "Re: Idea for our conversation club"), h("div", {cls:"mrm"}, "From: me · To: " + TRAN), h("p", null, "✅ Your reply is here.")]);
+    else read = h("div", {cls:"mread"}, [btns, h("div", {cls:"mempty"}, "Choose an email to read it.")]);
+  } else {
+    if(o.rows === "fix") list.appendChild(hit("m0", "the Undeliverable email", "mrow" + (o.open === "m0" ? " on" : " un"), [h("b", null, "Mail Delivery System"), h("span", null, h("b", null, "Undeliverable: Idea for our conversation club")), h("span", {cls:"mprev"}, "Your message was not delivered ...")]));
+    else list.appendChild(hit("m1", "the email from Ms Tran", "mrow" + (o.open === "m1" || o.open == null ? " on" : " un"), [h("b", null, "Ms Tran"), h("span", null, h("b", null, "Re: Idea for our conversation club")), h("span", {cls:"mprev"}, "Thanks for your email. The room sounds ...")]));
+    list.appendChild(hit("m2", "the email from Hideko", "mrow", [h("b", null, "Hideko"), h("span", null, "Did it work?"), h("span", {cls:"mprev"}, "Check your Sent Items. Talk soon ...")]));
+    list.appendChild(hit("m3", "the email from the library", "mrow", [h("b", null, "Lane Cove Library"), h("span", null, "Your book is ready"), h("span", {cls:"mprev"}, "Please collect your book from the front ...")]));
+    if(o.open === "m0") read = h("div", {cls:"mread"}, [h("div", {cls:"mrh"}, "Undeliverable: Idea for our conversation club"), h("div", {cls:"mrm"}, "From: Mail Delivery System · To: me"),
+      h("div", {cls:"undel"}, [h("p", null, h("b", null, "⚠ Your message was not delivered to:")), h("p", null, hit("badaddr", BAD, "mq" + (o.qdone ? " done" : ""), BAD)), h("p", null, "We can't find this address. Check the address and send it again.")])]);
+    else if(o.open === "m1" || o.open == null) read = h("div", {cls:"mread"}, [btns, h("div", {cls:"mrh"}, "Re: Idea for our conversation club"), h("div", {cls:"mrm"}, "From: Ms Tran · To: me"),
+      h("p", null, "Hi George,"), h("p", null, ["Thanks for your email. ", hit("mc", "The room sounds great!", "mq" + (o.cdone ? " done" : ""), "The room sounds great!"), " ", hit("mq", "How much does it cost?", "mq" + (o.qdone ? " done" : ""), "How much does it cost?")]),
+      h("p", {cls:"gap"}, "Cheers,"), h("p", null, "Ms Tran")]);
+    else read = h("div", {cls:"mread"}, [btns, h("div", {cls:"mempty"}, "Choose an email to read it.")]);
+  }
+  var kids = [];
+  if(o.note) kids.push(h("div", {cls:"mnote"}, o.note));
+  kids.push(h("div", {cls:"mbody"}, [side, h("div", {cls:"mmain"}, [list, read])]));
+  return stuTab(fold === "sent" ? "Sent Items" : "Mail", "mail.student-email.edu.au/" + fold, o, kids);
+}
+/* o.to, o.cc, o.subj, o.body, o.title, o.done */
+function composeView(o){
+  o = o || {}; var d = o.done || {};
+  function row(id, lab, label, val, extra){
+    return h("div", {cls:"crow"}, [hit(id, label, "clab" + (d[id] ? " done" : ""), [h("b", null, lab), h("span", {cls:"cval" + (val ? "" : " ph")}, val || (id === "subject" ? "Add a subject" : ""))]), extra || null]);
+  }
+  var body = o.body ? o.body.map(function(l){ return h("p", {cls:l.cls || null}, l.t); }) : [h("span", {cls:"muted"}, "Write your message here.")];
+  return stuTab(o.title || "New message", "mail.student-email.edu.au/new", o, [h("div", {cls:"cmp"}, [
+    h("div", {cls:"ctop"}, [hit("send", "Send", "csend" + (d.send ? " done" : ""), "Send"), hit("discard", "Discard", "cbt6" + (d.discard ? " done" : ""), "🗑 Discard"), hit("attach", "Attach", "cbt6" + (d.attach ? " done" : ""), "📎 Attach")]),
+    row("from", "From:", "the From box", ME),
+    row("to", "To:", "the To box", o.to, h("span", {cls:"ccb"}, [hit("cc", "Cc", "ccx" + (d.cc ? " done" : ""), "Cc"), hit("bcc", "Bcc", "ccx" + (d.bcc ? " done" : ""), "Bcc")])),
+    row("subject", "", "Add a subject", o.subj),
+    h("div", {cls:"cfmt"}, [hit("bold", "B (bold)", "fb5" + (d.bold ? " done" : ""), h("b", null, "B")), hit("italic", "I (italic)", "fb5" + (d.italic ? " done" : ""), h("i", null, "I")),
+      hit("underline", "U (underline)", "fb5" + (d.underline ? " done" : ""), h("u", null, "U"))]),
+    hit("body", "the message box", "ctxt" + (d.body ? " done" : ""), h("div", null, body))])]);
+}
+function signedOut(msg){
+  return h("div", null, [oneTab("Student email", "mail.student-email.edu.au"), h("div", {cls:"blank"}, [h("div", {style:"font-size:1.4em;font-weight:700;margin-bottom:.4em"}, "Student email"), h("div", null, "You are signed out."), h("div", {style:"margin-top:.6em"}, msg)])]);
+}
+/* keyboard */
+var KROWS = [
+  [["`", "the ` key"], ["1", "the 1 key"], ["k2", "the 2 key", "@\n2"], ["3", "the 3 key"], ["4", "the 4 key"], ["5", "the 5 key"], ["6", "the 6 key"], ["7", "the 7 key"], ["8", "the 8 key"], ["9", "the 9 key"], ["0", "the 0 key"], ["dash", "the dash key", "_\n-"], ["=", "the = key"], ["back", "Backspace", "⌫ Back|⌫", 2]],
+  [["tab", "Tab", "Tab|⇥", 1.5], ["q"], ["w"], ["e"], ["r"], ["kt", "the t key", "t"], ["y"], ["u"], ["i"], ["o"], ["p"], ["[", "the [ key"], ["]", "the ] key"]],
+  [["caps", "Caps Lock", "Caps", 1.8], ["ka", "the a key", "a"], ["s"], ["d"], ["f"], ["g"], ["kh", "the h key", "h"], ["j"], ["k"], ["l"], [";", "the ; key"], ["enter", "Enter", "Enter ↵|↵", 2.2]],
+  [["shiftL", "Shift", "⇧ Shift|⇧", 2.4], ["z"], ["x"], ["c"], ["v"], ["b"], ["n"], ["m"], [",", "the comma key"], ["dot", "the full stop key", ">\n."], ["/", "the / key"], ["shiftR", "Shift", "⇧ Shift|⇧", 2.4]],
+  [["space", "the space bar", "space bar", 8]]
+];
+function keyboardView(done){
+  var kb = h("div", {cls:"kb6"});
+  for(var r = 0; r < KROWS.length; r++){
+    var row = h("div", {cls:"krow"});
+    for(var k = 0; k < KROWS[r].length; k++){
+      var K = KROWS[r][k], id = K[0].length === 1 ? "k_" + K[0] : K[0], label = K[1] || "the " + K[0] + " key", txt = K[2] || K[0];
+      var kids = txt.indexOf("|") > -1 ? [h("span", {cls:"kl"}, txt.split("|")[0]), h("span", {cls:"ks"}, txt.split("|")[1])] : txt.indexOf("\n") > -1 ? [h("span", {cls:"kt"}, txt.split("\n")[0]), h("span", {cls:"kb"}, txt.split("\n")[1])] : txt;
+      var el = hit(id, label, "key" + (done && done[id] ? " done" : ""), kids);
+      el.style.flexGrow = K[3] || 1;
+      row.appendChild(el);
+    }
+    kb.appendChild(row);
+  }
+  return h("div", {cls:"kbwrap"}, [h("div", {cls:"kscreen"}, ["Hi Ms Tran,", h("span", {cls:"kcaret"})]), kb]);
+}
+var GEORGE = [{t:"Hi Ms Tran,"}, {t:"How's it going? I have an idea for our conversation club."}, {t:"The Wattle Room is a big room at the community centre in Crows Nest ..."}, {t:"See you later,", cls:"gap"}, {t:"George"}];
+var REPLY6 = [{t:"Hi Ms Tran,"}, {t:"Thanks! I'm glad you like it. It costs ten dollars for two hours."}, {t:"Talk soon,", cls:"gap"}, {t:"George"}];
+
+var SIMS = {
+  inbox: function(P, st){ return inboxView({done:doneTargets(P, st), acct:true}); },
+  compose: function(P, st){ return composeView({done:doneTargets(P, st)}); },
+  keyboard: function(P, st){ return keyboardView(doneTargets(P, st)); },
+  solo1: function(P, st){
+    if(st === 0) return desktop();
+    if(st === 1) return inboxView({rows:"fix", open:"none"});
+    if(st <= 3) return inboxView({rows:"fix", open:"m0", unread:2, qdone:st >= 3});
+    if(st === 4) return inboxView({folder:"sent", open:"none", unread:2});
+    if(st === 5) return inboxView({folder:"sent", open:"s1", unread:2});
+    if(st <= 7) return composeView({title:"FW: Idea for our conversation club", to:st >= 7 ? TRAN : "", subj:"FW: Idea for our conversation club", body:GEORGE});
+    if(st === 8) return inboxView({rows:"fix", open:"none", unread:2, note:"✅ Your email was sent."});
+    if(st === 9) return inboxView({folder:"sent", fixed:true, unread:2});
+    if(st === 10) return inboxView({folder:"sent", fixed:true, unread:2, acct:true});
+    return signedOut("✅ You fixed the address, sent it again and signed out. Now close the browser.");
+  },
+  solo2: function(P, st){
+    if(st === 0) return desktop();
+    if(st === 1) return inboxView({open:"none"});
+    if(st <= 4) return inboxView({open:"m1", unread:2, cdone:st >= 3, qdone:st >= 4});
+    if(st <= 6) return composeView({title:"Re: Idea for our conversation club", to:TRAN, subj:"Re: Idea for our conversation club", body:st >= 6 ? REPLY6 : null});
+    if(st === 7) return inboxView({open:"m1", unread:2, cdone:true, qdone:true, note:"✅ Your reply was sent."});
+    if(st === 8) return inboxView({folder:"sent", sentReply:true, goodAddr:true, unread:2});
+    if(st === 9) return inboxView({folder:"sent", sentReply:true, goodAddr:true, unread:2, acct:true});
+    return signedOut("✅ You read the comment and the question, replied and signed out. Now close the browser.");
+  }
+};
+
+function renderSim(P, w){
+  CUR = P;
+  var st = stepOf(P), seq = taskSeq(P), n = P.tasks.length, fb = S.fb[P.id];
+  var box = h("div", {cls:"taskbox", id:"taskbox"});
+  if(fb) box.appendChild(h("div", {cls:"tf " + (fb.ok ? "good" : "bad")}, (fb.ok ? "✓ " : "✗ ") + fb.msg));
+  if(st < n){
+    box.appendChild(h("div", {cls:"tn"}, "Task " + (st + 1) + " of " + n));
+    box.appendChild(h("div", {cls:"tt"}, P.tasks[seq[st]].t));
+  } else {
+    box.appendChild(h("div", {cls:"tt"}, "✅ Part finished! Right first time: " + rightN(P) + " of " + n + "."));
+  }
+  w.appendChild(box);
+  w.appendChild(h("div", {cls:"sim"}, SIMS[P.sim](P, st)));
+  if(st >= n || answeredN(P)) w.appendChild(h("div", {cls:"row"}, h("button", {cls:"chg", onclick:function(){ if(confirmTwice(this, "Tap again to start this part again")){ resetPart(P); renderTop(); } }}, "↻ Try this part again")));
+}
+function resetPart(P){
+  var ks = scored(P); for(var i = 0; i < ks.length; i++) delete S.ans[ks[i]];
+  delete S.step[P.id]; delete S.fb[P.id]; delete S.typed[P.id];
+  if(P.shuffleTasks) S.seq[P.id] = shuffle(range(P.tasks.length));
+  if(P.type === "q") delete S.seq[P.id];
+  save(true);
+}
+function staticPage(){ return h("div"); }
+
+/* notes at the top of some parts */
+var INTRO = {
+  names: function(){ return note("", "i", [h("p", null, "New email → New mail   Sent → Sent Items   Bin → Deleted Items"), h("p", null, "Subject → Add a subject   Log out → Sign out   Send: at the top")]); },
+  strategy: function(){ return note("", "i", [h("p", null, [h("span", {cls:"hl"}, "1. The problem:"), " My email didn't arrive."]), h("p", null, [h("span", {cls:"hl"}, "2. What you did:"), " I sent it last night."]), h("p", null, [h("span", {cls:"hl"}, "3. A clear question:"), " Can you help me?"])]); },
+  stress: function(){ return note("", "i", [h("p", null, "Long words have one strong part. Say it louder and longer: IN·box."), h("p", null, "Two-word verbs: the second word is strong. sign OUT, log IN.")]); },
+  keys: function(){ return note("", "i", [h("p", null, "@ = Shift and 2   _ = Shift and dash   . = full stop (say dot)"), h("p", null, "Shift and a letter = a capital. Enter = a new line. Backspace = delete.")]); },
+  compound: function(){ return note("", "i", [h("p", null, "I went there last month and I loved it.   We took the bus, but it was late."), h("p", null, "go → went   take → took   find → found   have → had. No comma before because.")]); },
+  hww: function(){ return note("", "i", [h("p", null, "How? easily, by bus   When? on Saturday, after class   Where? near the station"), h("p", null, "on + a day   at + a time   in + part of the day")]); },
+  code: function(){ return note("", "i", [h("p", null, "C capital letter   A article   SV subject and verb   WT wrong tense"), h("p", null, "WF wrong form   P punctuation   Sp spelling   MW missing word")]); },
+  yuko: function(){
+    function mail(L, B, close){ var box = h("div", {cls:"jmail"}); for(var i = 0; i < L.length; i++) box.appendChild(h("div", {cls:"jm"}, L[i]));
+      for(var j = 0; j < B.length; j++) box.appendChild(h("p", null, B[j]));
+      box.appendChild(h("p", {cls:"gap"}, close[0])); box.appendChild(h("p", null, close[1])); return box; }
+    return h("div", null, [
+      mail(["From: yuko.s@student-email.edu.au", "To: tran_k@harbourmail.com.au", "Subject: Another idea for our club"],
+        ["Hi Ms Tran,", "How's it going? I have another idea for our conversation club.",
+         "The Banksia Room is a meeting room at the community centre in Chatswood. It has big windows and a lot of tables and chairs.",
+         "We can get there easily by train. The station is a short walk from the centre.",
+         "I went there last week and I liked it. It's a good place for our club because it's quiet in the morning.",
+         "Do you like my idea? Can we meet there on Tuesday mornings?"], ["See you later,", "Yuko"]),
+      mail(["From: tran_k@harbourmail.com.au", "To: yuko.s@student-email.edu.au", "Subject: Re: Another idea for our club"],
+        ["Hi Yuko,", "Thanks for your idea. Big windows sound lovely! What time does the room open?"], ["Cheers,", "Ms Tran"]),
+      h("p", {cls:"muted small"}, "The Banksia Room is a place for practice.")]);
+  }
+};
+/* ===================== QUESTION CARDS ===================== */
+function itemOrder(P){
+  var idx = []; for(var i = 0; i < P.items.length; i++) idx.push(i);
+  if(!P.shuffleQ) return idx;
+  if(!S.seq[P.id]){ S.seq[P.id] = shuffle(idx); save(); }
+  return S.seq[P.id];
+}
+function optOrder(it){
+  if(it.k === "fixed") return range(it.opts.length);
+  if(!S.ord[it.id]){ S.ord[it.id] = shuffle(range(it.opts.length)); save(); }
+  return S.ord[it.id];
+}
+function correctIdx(it){ return it.k === "fixed" ? it.ans : 0; }
+function renderCard(P, it, n){
+  var a = S.ans[it.id], ci = correctIdx(it);
+  var card = h("div", {cls:"card" + (a ? (a.ok ? " ok" : " no") : ""), id:"c-" + it.id});
+  card.appendChild(h("div", {cls:"chead"}, [h("span", {cls:"num"}, String(n)), it.tag ? h("span", {cls:"tag"}, it.tag) : null,
+    (it.sayw || it.hear) && window.speechSynthesis ? h("button", {cls:"say", onclick:function(){ say(it.sayw || it.hear); }}, "\uD83D\uDD0A Hear it") : null]));
+  if(it.show) card.appendChild(h("div", {cls:"showtxt"}, it.show));
+  if(it.sayw) card.appendChild(h("div", {cls:"stress"}, it.q));
+  else card.appendChild(h("div", {cls:"q"}, it.q));
+  if(it.pg) card.appendChild(h("button", {cls:"chg", style:"margin:0 0 .3em", onclick:function(){ var pg = document.getElementById("page-" + it.pg); if(pg) pg.scrollIntoView({behavior:REDUCED ? "auto" : "smooth"}); }}, "\u2191 See the page"));
+  var ord = optOrder(it);
+  for(var j = 0; j < ord.length; j++){
+    (function(oi){
+      var cls = "opt", mk = "";
+      if(a){ if(oi === ci){ cls += " right"; mk = "\u2713"; } else if(a.pick === it.opts[oi]){ cls += " wrong"; mk = "\u2717"; } else cls += " dim"; }
+      card.appendChild(h("button", {cls:cls, onclick:function(){
+        if(S.ans[it.id]) return;
+        S.ans[it.id] = {ok:oi === ci, pick:it.opts[oi]}; S.last = P.id; save(true); renderKeep();
+      }}, [h("span", {cls:"ol"}, "ABCDE".charAt(j)), h("span", {cls:"tx"}, it.opts[oi]), mk ? h("span", {cls:"mk"}, mk) : null]));
+    })(ord[j]);
+  }
+  if(a){
+    card.appendChild(h("div", {cls:"fb" + (a.ok ? " good" : "")}, [h("b", null, a.ok ? "Yes! That's right." : "Not quite. The answer is: " + it.opts[ci]), it.why]));
+    card.appendChild(h("button", {cls:"chg", onclick:function(){ delete S.ans[it.id]; save(true); renderKeep(); }}, "\u21BA Change my answer"));
+  }
+  return card;
+}
+function renderQ(P, w){
+  if(P.intro && INTRO[P.intro]) w.appendChild(INTRO[P.intro]());
+  var ord = itemOrder(P), n = 0;
+  for(var i = 0; i < ord.length; i++){
+    var it = P.items[ord[i]];
+    if(it.k === "page"){ w.appendChild(staticPage(it.page)); continue; }
+    n++; w.appendChild(renderCard(P, it, n));
+  }
+}
+
+/* ===================== VIEWS ===================== */
+var main = document.getElementById("main"), wrap = document.getElementById("wrap"), foot = document.getElementById("foot");
+function setAddr(t){ document.getElementById("addr").textContent = "\uD83D\uDD12 vu23560 \u203A revision" + (t ? " \u203A " + t : ""); }
+function setProg(){
+  var pg = document.getElementById("prog"); pg.innerHTML = "";
+  for(var i = 0; i < PARTS.length; i++) pg.appendChild(h("i", {cls:partDone(PARTS[i]) || (S.v === "part" && S.p === i) ? "on" : "", style:"background:" + colOf(PARTS[i]).c}));
+}
+function confirmTwice(btn, msg){
+  if(btn.getAttribute("data-armed") === "1") return true;
+  btn.setAttribute("data-armed", "1"); var old = btn.textContent; btn.textContent = msg;
+  setTimeout(function(){ if(btn.parentNode){ btn.removeAttribute("data-armed"); btn.textContent = old; } }, 3000);
+  return false;
+}
+function sbar(l, t){ return h("div", {cls:"sbar"}, [h("div", {cls:"blk"}, l), h("div", {cls:"ttl"}, t)]); }
+
+function menuTile(P, i){
+  var tot = scored(P).length, an = answeredN(P), done = partDone(P), sc;
+  if(done) sc = h("span", {cls:"sc done"}, "Score: " + rightN(P) + " / " + tot);
+  else if(an || stepOf(P)) sc = h("span", {cls:"sc"}, (P.type === "sim" ? stepOf(P) : an) + " of " + tot + (P.type === "sim" ? " done" : " answered"));
+  var g = colOf(P);
+  return h("button", {cls:"mtile", style:"border-bottom-color:" + g.c, onclick:function(){ openPart(i); }}, [
+    h("span", {cls:"l", style:"background:" + g.c + ";color:" + g.ink}, P.id),
+    h("span", {cls:"t"}, [h("b", null, P.title), h("span", {cls:"d"}, P.desc), sc])]);
+}
+function renderMenu(){
+  document.body.className = "g0"; setAddr("menu");
+  var w = wrap;
+  w.appendChild(h("div", {cls:"hero"}, [h("div", {cls:"hbar"}, "\u25CF\u25CF\u25CF  \uD83D\uDD12 vu23560 \u203A lesson-6 \u203A revision"),
+    h("div", {cls:"panel"}, [h("div", {cls:"eyebrow"}, "Access the internet and email \u00B7 EAL Level 2"), h("div", {cls:"big"}, "Ready, set, send"), h("div", null, "Revision: use your student email, then check what you know.")])]));
+  var t = totals();
+  if(t.a > 0){
+    var lp = S.last ? PARTS[indexOfPart(S.last)] : null, next = firstOpen();
+    w.appendChild(h("div", {cls:"welcome"}, [h("b", null, "Welcome back! \uD83D\uDC4B "), lp ? "You were on Part " + lp.id + ": " + lp.title + "." : "",
+      h("div", {cls:"row", style:"margin-top:.3em"}, [next > -1 ? h("button", {cls:"bb solid", onclick:function(){ openPart(next); }}, "Continue \u25B6") : h("button", {cls:"bb solid", onclick:function(){ go("results"); }}, "See my results")])]));
+  }
+  if(!storeOK) w.appendChild(note("warn", "!", h("p", null, "This page cannot save on this phone. You can still use it.")));
+  for(var g = 0; g < GROUPS.length; g++){
+    w.appendChild(h("div", {cls:"grouphead"}, [h("span", {cls:"sw", style:"background:" + GROUPS[g].c}), GROUPS[g].t]));
+    for(var i = 0; i < PARTS.length; i++) if(PARTS[i].grp === g) w.appendChild(menuTile(PARTS[i], i));
+  }
+  w.appendChild(h("div", {cls:"grouphead"}, [h("span", {cls:"sw", style:"background:#6B6B6B"}), "Finish"]));
+  w.appendChild(h("button", {cls:"mtile", style:"border-bottom-color:#6B6B6B", onclick:function(){ go("results"); }}, [h("span", {cls:"l", style:"background:#6B6B6B;color:#fff"}, "\u2605"),
+    h("span", {cls:"t"}, [h("b", null, "My results"), h("span", {cls:"d"}, "See your score. Go over your mistakes.")])]));
+  if(t.a > 0) w.appendChild(h("div", {cls:"row", style:"margin-top:.8em"}, h("button", {cls:"chg", onclick:function(){ if(confirmTwice(this, "Tap again to clear everything")){ var sz = S.size; S = blank(); S.size = sz; save(true); renderTop(); } }}, "Start again from the beginning")));
+  foot.innerHTML = "";
+  var nx = firstOpen();
+  foot.appendChild(h("button", {cls:"bb go", onclick:function(){ openPart(nx > -1 ? nx : 0); }}, nx > 0 ? "Continue \u25B6" : "Start \u25B6"));
+}
+function indexOfPart(id){ for(var i = 0; i < PARTS.length; i++) if(PARTS[i].id === id) return i; return 0; }
+function firstOpen(){ for(var i = 0; i < PARTS.length; i++) if(!partDone(PARTS[i])) return i; return -1; }
+
+function renderPart(){
+  var P = PARTS[S.p];
+  document.body.className = "g" + P.grp; var co = colOf(P); document.body.style.setProperty("--pc", co.c); document.body.style.setProperty("--pc-ink", co.ink); document.body.style.setProperty("--pc-tint", co.tint); document.body.style.setProperty("--tagc", PCOL[P.id] ? co.c : "#8A5300"); setAddr("part-" + P.id.toLowerCase());
+  var w = wrap;
+  w.appendChild(sbar(P.id, P.title));
+  w.appendChild(h("div", {cls:"lede"}, P.desc));
+  var tot = scored(P).length, an = P.type === "sim" ? stepOf(P) : answeredN(P);
+  w.appendChild(h("div", {cls:"live" + (P.type === "sim" ? " small" : "")}, [P.type === "sim" ? "Tasks done: " + an + " of " + tot + ". Right first time: " + rightN(P) + "." : "This part: " + rightN(P) + " correct out of " + answeredN(P) + " answered.",
+    h("div", {cls:"bar"}, h("i", {style:"width:" + Math.round(an / tot * 100) + "%"}))]));
+  if(P.type === "sim") renderSim(P, w); else renderQ(P, w);
+  if(partDone(P)) w.appendChild(partSummary(P));
+  else if(P.type === "q" && answeredN(P)) w.appendChild(h("div", {cls:"row", style:"margin-top:.6em"}, h("button", {cls:"chg", onclick:function(){ if(confirmTwice(this, "Tap again to clear this part")){ resetPart(P); renderTop(); } }}, "\u21BB Try this part again")));
+  renderPartFoot(P);
+  updatePill(P);
+}
+function partSummary(P){
+  var ks = scored(P), wrong = [];
+  for(var i = 0; i < ks.length; i++) if(S.ans[ks[i]] && !S.ans[ks[i]].ok) wrong.push(ks[i]);
+  var box = h("div", {cls:"summary"}, [h("b", null, "\uD83C\uDF89 Page finished! You got " + rightN(P) + " of " + ks.length + " right.")]);
+  if(wrong.length && P.type === "q"){
+    box.appendChild(h("div", {cls:"muted"}, "Look at these again:"));
+    var r = h("div");
+    for(var j = 0; j < wrong.length; j++){ (function(k){ r.appendChild(h("button", {cls:"mchip", onclick:function(){ flashCard(k); }}, "Question " + cardNum(P, k))); })(wrong[j]); }
+    box.appendChild(r);
+  }
+  if(P.type === "q") box.appendChild(h("button", {cls:"chg", onclick:function(){ if(confirmTwice(this, "Tap again to clear this part")){ resetPart(P); renderTop(); } }}, "\u21BB Try this part again"));
+  return box;
+}
+function cardNum(P, key){ var ord = itemOrder(P), n = 0; for(var i = 0; i < ord.length; i++){ var it = P.items[ord[i]]; if(it.k === "page") continue; n++; if(it.id === key) return n; } return "?"; }
+function flashCard(key){
+  var c = document.getElementById("c-" + key); if(!c) return;
+  c.scrollIntoView({behavior:REDUCED ? "auto" : "smooth", block:"center"});
+  c.classList.remove("flash"); void c.offsetWidth; c.classList.add("flash");
+}
+function firstUnanswered(P){
+  if(P.type === "sim") return document.getElementById("taskbox");
+  var ord = itemOrder(P);
+  for(var i = 0; i < ord.length; i++){ var it = P.items[ord[i]]; if(it.k !== "page" && !S.ans[it.id]) return document.getElementById("c-" + it.id); }
+  return null;
+}
+function renderPartFoot(P){
+  foot.innerHTML = "";
+  var left = remaining(P);
+  foot.appendChild(h("button", {cls:"bb menub", "aria-label":"Main menu", onclick:function(){ go("menu"); }}, "\u2630 Menu"));
+  foot.appendChild(h("button", {cls:"bb", "aria-label":S.p > 0 ? "Back to Part " + PARTS[S.p - 1].id : "Back to the menu", onclick:function(){ if(S.p > 0) openPart(S.p - 1); else go("menu"); }}, S.p > 0 ? "\u25C0 " + PARTS[S.p - 1].id : "\u25C0 Back"));
+  var last = S.p === PARTS.length - 1;
+  if(left > 0){
+    foot.appendChild(h("button", {cls:"bb wait", onclick:function(){
+      blocked++;
+      var el = firstUnanswered(P);
+      if(el){ el.scrollIntoView({behavior:REDUCED ? "auto" : "smooth", block:P.type === "sim" ? "start" : "center"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+      if(blocked >= 2) renderPartFoot(P);
+    }}, left + " left \u25BE"));
+    if(blocked >= 2) foot.appendChild(h("button", {cls:"bb skip", onclick:function(){ blocked = 0; if(last) go("results"); else openPart(S.p + 1); }}, "Skip this page for now"));
+  } else {
+    foot.appendChild(h("button", {cls:"bb go", onclick:function(){ if(last) go("results"); else openPart(S.p + 1); }}, last ? "Results \u2605" : "Next: " + PARTS[S.p + 1].id + " \u25B6"));
+  }
+}
+var pillEl = null;
+function updatePill(P){
+  var root = document.getElementById("pillRoot"); root.innerHTML = ""; pillEl = null;
+  if(!P || P.type === "sim") return;
+  var left = remaining(P); if(!left) return;
+  pillEl = h("button", {cls:"pill", onclick:function(){ var el = firstUnanswered(P); if(el){ el.scrollIntoView({behavior:REDUCED ? "auto" : "smooth", block:"center"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); } }},
+    left + " left. Take me there \u25BE");
+  root.appendChild(pillEl); pillCheck();
+}
+function pillCheck(){
+  if(!pillEl || S.v !== "part") return;
+  var el = firstUnanswered(PARTS[S.p]); if(!el){ pillEl.style.display = "none"; return; }
+  var r = el.getBoundingClientRect(), m = main.getBoundingClientRect();
+  pillEl.style.display = (r.bottom > m.top && r.top < m.bottom) ? "none" : "";
+}
+main.addEventListener("scroll", pillCheck);
+
+function stars(pct){ return pct >= 90 ? 5 : pct >= 75 ? 4 : pct >= 60 ? 3 : pct >= 40 ? 2 : 1; }
+function renderResults(){
+  document.body.className = "g2"; setAddr("results");
+  var w = wrap, t = totals(), pct = Math.round(t.r / TOTAL * 100), s = stars(pct);
+  var bands = ["", "Keep going. Try each part again. Ask your teacher for help.", "You are getting there. Go over your mistakes with a partner.",
+    "Good work. Go over your mistakes. Then try those parts again.", "Great work! Look at your mistakes, then try them again.", "Excellent! You are ready for your email task."];
+  w.appendChild(sbar("\u2605", "My results"));
+  w.appendChild(h("div", {cls:"card", style:"border-bottom-color:#F5A20F"}, [h("div", {cls:"score"}, t.r + " / " + TOTAL),
+    h("div", {cls:"stars", "aria-label":s + " stars out of 5"}, "\u2605\u2605\u2605\u2605\u2605".slice(0, s) + "\u2606\u2606\u2606\u2606\u2606".slice(0, 5 - s)),
+    h("p", {cls:"center", style:"font-weight:700"}, bands[s]),
+    t.a < TOTAL ? h("p", {cls:"center muted"}, "You answered " + t.a + " of " + TOTAL + ". Finish the other parts for a full score.") : null]));
+  var nm = mistakes().length;
+  w.appendChild(h("button", {cls:"bb go", style:"width:100%;margin:.3em 0", onclick:function(){ go("review"); }}, nm ? "Go over my mistakes (" + nm + ")" : "No mistakes! \uD83C\uDF89"));
+  w.appendChild(h("div", {cls:"grouphead"}, "Each part"));
+  for(var i = 0; i < PARTS.length; i++){
+    (function(i){ var P = PARTS[i], g = colOf(P);
+      w.appendChild(h("button", {cls:"rrow", onclick:function(){ openPart(i); }}, [h("span", {cls:"l", style:"background:" + g.c + ";color:" + g.ink}, P.id),
+        h("span", {cls:"t"}, P.title), h("span", {cls:"s"}, rightN(P) + " / " + scored(P).length)])); })(i);
+  }
+  foot.innerHTML = "";
+  foot.appendChild(h("button", {cls:"bb", onclick:function(){ go("menu"); }}, "\u2630 Menu"));
+  foot.appendChild(h("button", {cls:"bb go", onclick:function(){ go("review"); }, disabled:nm ? null : "disabled"}, "My mistakes"));
+}
+function mistakes(){
+  var list = [];
+  for(var i = 0; i < PARTS.length; i++){
+    var P = PARTS[i];
+    if(P.type === "sim"){ var seq = taskSeq(P);
+      for(var s = 0; s < seq.length; s++){ var ti = seq[s], a = S.ans[P.id + "t" + ti]; if(a && !a.ok){ var T = P.tasks[ti];
+        list.push({P:P, pi:i, q:T.t, you:a.pick, right:rightLabel(P, T), why:T.why, sim:true}); } } }
+    else { var ord = itemOrder(P);
+      for(var j = 0; j < ord.length; j++){ var it = P.items[ord[j]]; if(it.k === "page") continue; var b = S.ans[it.id];
+        if(b && !b.ok) list.push({P:P, pi:i, key:it.id, q:(it.show ? it.show + "  " : "") + it.q, you:b.pick, right:it.opts[correctIdx(it)], why:it.why}); } }
+  }
+  return list;
+}
+var TARGETNAMES = {};
+function rightLabel(P, T){
+  var t = T.target instanceof Array ? T.target[0] : T.target;
+  return T.rl || TARGETNAMES[t] || t;
+}
+function renderReview(){
+  document.body.className = "g2"; setAddr("my-mistakes");
+  var w = wrap, list = mistakes();
+  w.appendChild(sbar("\u2717", "Go over my mistakes"));
+  if(!list.length) w.appendChild(note("ok", "\u2713", h("p", null, "No mistakes to go over. Well done!")));
+  else w.appendChild(h("p", {cls:"lede"}, "Read each one. Then try it again."));
+  var lastP = null;
+  for(var i = 0; i < list.length; i++){
+    (function(m){
+      if(m.P !== lastP){ w.appendChild(h("div", {cls:"grouphead"}, [h("span", {cls:"sw", style:"background:" + colOf(m.P).c}), "Part " + m.P.id + ": " + m.P.title])); lastP = m.P; }
+      w.appendChild(h("div", {cls:"card no mist"}, [h("div", {cls:"q"}, m.q),
+        h("div", null, ["You chose: ", h("span", {cls:"you"}, m.you)]),
+        h("div", null, ["Right answer: ", h("span", {cls:"right"}, m.right)]),
+        h("div", {cls:"fb"}, m.why),
+        h("button", {cls:"chg", onclick:function(){
+          if(m.sim){ resetPart(m.P); openPart(m.pi); }
+          else { delete S.ans[m.key]; save(true); openPart(m.pi, m.key); }
+        }}, m.sim ? "\u21BB Do this part again" : "\u21BA Try it again")]));
+    })(list[i]);
+  }
+  foot.innerHTML = "";
+  foot.appendChild(h("button", {cls:"bb", onclick:function(){ go("results"); }}, "\u25C0 My results"));
+  foot.appendChild(h("button", {cls:"bb go", onclick:function(){ go("menu"); }}, "\u2630 Menu"));
+}
+
+/* ===================== ROUTER ===================== */
+function renderTop(){ document.body.removeAttribute("style"); document.documentElement.style.fontSize = SIZES[S.size] + "px"; wrap.innerHTML = ""; document.getElementById("pillRoot").innerHTML = ""; pillEl = null;
+  if(S.v === "part") renderPart(); else if(S.v === "results") renderResults(); else if(S.v === "review") renderReview(); else renderMenu();
+  setProg(); FLASH = null; }
+function renderKeep(){ var y = main.scrollTop; renderTop(); main.scrollTop = y; pillCheck(); }
+function go(v){ try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} S.v = v; blocked = 0; save(); renderTop(); main.scrollTop = 0; }
+function openPart(i, focusKey){
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  S.v = "part"; S.p = i; S.last = PARTS[i].id; blocked = 0; save(); renderTop(); main.scrollTop = 0;
+  if(focusKey) setTimeout(function(){ flashCard(focusKey); }, 60);
+}
+document.getElementById("bMenu").onclick = function(){ go("menu"); };
+document.getElementById("bSmall").onclick = function(){ if(S.size > 0){ S.size--; save(); renderKeep(); } };
+document.getElementById("bBig").onclick = function(){ if(S.size < SIZES.length - 1){ S.size++; save(); renderKeep(); } };
+document.addEventListener("keydown", function(e){ if(e.key === "Escape") go("menu"); });
+window.addEventListener("pagehide", function(){ save(); });
+document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "hidden") save(); });
+
+load();
+if(S.v === "review" || S.v === "results" || S.v === "part" || S.v === "menu"){} else S.v = "menu";
+renderTop();
+})();
+</script>
+</body>
+</html>
